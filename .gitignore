@@ -27,5 +27,7 @@ prisma/dev.db
 prisma/dev.db-journal
 dev.db
 dev.db-journal
+auth
+auth-wal
 
 .vercel
