@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { User, Package, Heart, MapPin, LogOut, Loader2 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { motion } from "framer-motion";
@@ -22,6 +23,8 @@ interface Order {
 
 export default function AccountPage() {
   const { data: session, status, update } = useSession();
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const router = useRouter();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>("profile");
@@ -31,7 +34,7 @@ export default function AccountPage() {
   const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
 
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/login");
+    if (status === "unauthenticated") router.push(L("/login"));
   }, [status, router]);
 
   useEffect(() => {
@@ -108,7 +111,7 @@ export default function AccountPage() {
                   </button>
                 ))}
                 <div className="border-t border-gray-100 my-2" />
-                <button onClick={() => signOut({ callbackUrl: "/" })}
+                <button onClick={() => signOut({ callbackUrl: L("/") })}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
                   <LogOut size={18} /> <span className="text-sm font-medium">تسجيل الخروج</span>
                 </button>
@@ -158,7 +161,7 @@ export default function AccountPage() {
                     <div className="text-center py-8">
                       <Package size={48} className="text-gray-300 mx-auto mb-4" />
                       <p className="text-gray-500 mb-4">لا توجد طلبات بعد</p>
-                      <button onClick={() => router.push("/products")} className="bg-gold text-secondary px-6 py-2 rounded-lg font-medium">
+                      <button onClick={() => router.push(L("/products"))} className="bg-gold text-secondary px-6 py-2 rounded-lg font-medium">
                         تصفح المنتجات
                       </button>
                     </div>

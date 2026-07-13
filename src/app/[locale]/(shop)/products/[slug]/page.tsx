@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect, use } from "react";
 import { ShoppingBag, Heart, Share2, Minus, Plus, Shield, Truck, RotateCcw, Loader2 } from "lucide-react";
 import { useCartStore } from "@/lib/store";
@@ -33,6 +33,7 @@ interface ProductData {
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const t = useTranslations("product");
+  const locale = useLocale();
   const router = useRouter();
   const addItem = useCartStore((s) => s.addItem);
   const { addToast } = useToast();
@@ -75,7 +76,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       karat: karatNum, stock: product.stock,
     }, quantity);
     addToast(`${product.name} تمت الإضافة للسلة`);
-    router.push("/cart");
+    router.push(`/${locale}/cart`);
   };
 
   return (

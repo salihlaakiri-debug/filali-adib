@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,8 @@ type CheckoutStep = "shipping" | "payment" | "review";
 
 export default function CheckoutPage() {
   const t = useTranslations("checkout");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const { data: session, status } = useSession();
   const router = useRouter();
   const { items, getSubtotal, getShipping, getTax, getTotal, clearCart } = useCartStore();
@@ -26,7 +28,7 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/login");
+    if (status === "unauthenticated") router.push(L("/login"));
   }, [status, router]);
 
   if (status === "loading") {
@@ -68,7 +70,7 @@ export default function CheckoutPage() {
       }
       clearCart();
       addToast(`تم إنشاء الطلب بنجاح - ${data.order.orderNumber}`);
-      router.push(`/account?tab=orders`);
+      router.push(L("/account") + "?tab=orders");
     } catch {
       addToast("حدث خطأ في الاتصال بالخادم");
     } finally {
@@ -81,7 +83,7 @@ export default function CheckoutPage() {
       <div className="bg-light min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-500 mb-4">سلتك فارغة</p>
-          <button onClick={() => router.push("/products")} className="bg-gold text-secondary px-6 py-3 rounded-xl font-semibold">
+          <button onClick={() => router.push(L("/products"))} className="bg-gold text-secondary px-6 py-3 rounded-xl font-semibold">
             تصفح المنتجات
           </button>
         </div>

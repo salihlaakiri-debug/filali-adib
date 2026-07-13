@@ -33,7 +33,7 @@ export default function LoginPage() {
         setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
         return;
       }
-      router.push("/");
+      router.push(L("/"));
       router.refresh();
     } catch {
       setError("حدث خطأ في الاتصال بالخادم");

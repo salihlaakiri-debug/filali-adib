@@ -97,7 +97,7 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
   }
 
   return (
-    <Link href={`/products/${product.slug}`}>
+    <Link href={L(`/products/${product.slug}`)}>
       <div className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
         <div className="relative aspect-square bg-gray-100 overflow-hidden">
           {product.images && product.images.length > 0 ? (

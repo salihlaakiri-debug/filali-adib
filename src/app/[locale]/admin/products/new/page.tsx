@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -15,6 +15,8 @@ interface Category {
 
 export default function NewProductPage() {
   const t = useTranslations("admin.products");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const router = useRouter();
   const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -53,7 +55,7 @@ export default function NewProductPage() {
       const data = await res.json();
       if (!res.ok) { addToast(data.error || "حدث خطأ"); return; }
       addToast("تم إضافة المنتج بنجاح");
-      router.push("/admin/products");
+      router.push(L("/admin/products"));
     } catch { addToast("حدث خطأ في الاتصال"); } finally { setLoading(false); }
   };
 

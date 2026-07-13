@@ -32,7 +32,7 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "حدث خطأ أثناء إنشاء الحساب"); return; }
-      router.push("/login?registered=true");
+      router.push(L("/login") + "?registered=true");
     } catch { setError("حدث خطأ في الاتصال بالخادم"); } finally { setLoading(false); }
   };
 
