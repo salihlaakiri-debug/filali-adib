@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect, use } from "react";
+import Link from "next/link";
 import { ShoppingBag, Heart, Share2, Minus, Plus, Shield, Truck, RotateCcw, Loader2, Star, Send } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
@@ -43,12 +44,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFav, setIsFav] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
   const { data: session } = useSession();
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewStats, setReviewStats] = useState({ total: 0, average: 0 });
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
 
   const handleToggleFavorite = () => {
     if (!product) return;
@@ -134,11 +137,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     <div className="bg-light min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <motion.nav initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-sm text-gray-500 mb-6">
-          <span className="hover:text-gold cursor-pointer transition-colors">الرئيسية</span>
+          <Link href={L("/")} className="hover:text-gold transition-colors">الرئيسية</Link>
           <span className="mx-2">/</span>
-          <span className="hover:text-gold cursor-pointer transition-colors">المنتجات</span>
-          <span className="mx-2">/</span>
-          <span className="hover:text-gold cursor-pointer transition-colors">{product.category?.name}</span>
+          <Link href={L("/products")} className="hover:text-gold transition-colors">المنتجات</Link>
           <span className="mx-2">/</span>
           <span className="text-secondary">{product.name}</span>
         </motion.nav>
@@ -149,12 +150,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               <AnimatePresence mode="wait">
                 {product.images && product.images.length > 0 ? (
                   <motion.img
-                    key={product.images[0].url}
+                    key={product.images[activeImage]?.url}
                     initial={{ opacity: 0, scale: 1.1 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.5 }}
-                    src={product.images[0].url}
+                    src={product.images[activeImage]?.url}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -176,6 +177,19 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </div>
               )}
             </div>
+            {/* Thumbnails */}
+            {product.images && product.images.length > 1 && (
+              <div className="flex gap-2 mt-3">
+                {product.images.map((img, i) => (
+                  <button key={i} onClick={() => setActiveImage(i)}
+                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                      i === activeImage ? "border-gold shadow-md" : "border-gray-200 opacity-60 hover:opacity-100"
+                    }`}>
+                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </FadeIn>
 
           <FadeIn direction="left" delay={0.2}>
