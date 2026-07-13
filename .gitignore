@@ -31,3 +31,4 @@ auth
 auth-wal
 
 .vercel
+.env*

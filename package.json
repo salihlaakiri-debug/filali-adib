@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && node -e \"if(process.env.DATABASE_URL){require('child_process').execSync('npx prisma db push --skip-generate',{stdio:'inherit'})}\" && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
@@ -52,6 +52,7 @@
     "postcss": "^8.4.0",
     "prisma": "^7.8.0",
     "tailwindcss": "^4.0.0",
+    "tsx": "^4.23.1",
     "typescript": "^5.5.0"
   }
 }
