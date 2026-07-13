@@ -70,7 +70,7 @@ export default function CheckoutPage() {
       }
       clearCart();
       addToast(`تم إنشاء الطلب بنجاح - ${data.order.orderNumber}`);
-      router.push(L("/account") + "?tab=orders");
+      router.push(L("/order-success"));
     } catch {
       addToast("حدث خطأ في الاتصال بالخادم");
     } finally {
