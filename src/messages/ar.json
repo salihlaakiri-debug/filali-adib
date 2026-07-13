@@ -1,0 +1,224 @@
+{
+  "common": {
+    "appName": "فيلالي عديب - حرفي مجوهرات",
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "تم بنجاح",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "viewAll": "عرض الكل",
+    "readMore": "اقرأ المزيد",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "noResults": "لا توجد نتائج",
+    "currency": "درهم مغربي",
+    "currencyShort": "د.م"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "products": "المنتجات",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "cart": "سلة التسوق",
+    "account": "حسابي",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "admin": "لوحة التحكم",
+    "orders": "الطلبات",
+    "favorites": "المفضلة",
+    "search": "بحث"
+  },
+  "home": {
+    "hero": {
+      "title": "فيلالي عديب",
+      "subtitle": "حرفي مجوهرات | ARTISTE JOAILLIER",
+      "description": "خبرة وحِرفية في صناعة وبيع وشراء الذهب في المغرب",
+      "shopNow": "تسوق الآن",
+      "learnMore": "اعرف المزيد"
+    },
+    "featured": {
+      "title": "منتجات مميزة",
+      "subtitle": "اكتشف تشكيلتنا الفاخرة من المجوهرات الذهبية"
+    },
+    "categories": {
+      "title": "تصنيفاتنا",
+      "subtitle": "تصفح حسب الفئة"
+    },
+    "about": {
+      "title": "قصتنا",
+      "subtitle": "حرفي مجوهرات بخبرة تمتد لسنوات",
+      "description": "نحن متجر متخصص في بيع وشراء الذهب والمجوهرات في المغرب. بخبرة تمتد لسنوات، نقدم لكم أرقى التصاميم وأجود أنواع الذهب بأسعار تنافسية.",
+      "features": {
+        "quality": "ذهب عالي الجودة",
+        "expertise": "خبرة واحترافية",
+        "trust": "ثقة ونزاهة"
+      }
+    },
+    "newsletter": {
+      "title": "اشترك في نشرتنا الإخبارية",
+      "description": "احصل على آخر العروض والتخفيضات",
+      "placeholder": "بريدك الإلكتروني",
+      "subscribe": "اشترك"
+    }
+  },
+  "products": {
+    "title": "المنتجات",
+    "subtitle": "اكتشف تشكيلتنا الفاخرة",
+    "filters": {
+      "category": "الفئة",
+      "karat": "العيار",
+      "price": "السعر",
+      "weight": "الوزن",
+      "all": "الكل",
+      "clear": "مسح التصفية"
+    },
+    "sort": {
+      "newest": "الأحدث",
+      "priceLow": "السعر: من الأقل إلى الأعلى",
+      "priceHigh": "السعر: من الأعلى إلى الأقل",
+      "popular": "الأكثر شعبية"
+    },
+    "grid": {
+      "view": "عرض",
+      "list": "قائمة"
+    },
+    "empty": "لا توجد منتجات حالياً"
+  },
+  "product": {
+    "addToCart": "أضف إلى السلة",
+    "addToFavorites": "أضف للمفضلة",
+    "share": "مشاركة",
+    "description": "الوصف",
+    "specifications": "المواصفات",
+    "reviews": "التقييمات",
+    "related": "منتجات مشابهة",
+    "inStock": "متوفر",
+    "outOfStock": "غير متوفر",
+    "quantity": "الكمية",
+    "weight": "الوزن",
+    "karat": "العيار",
+    "certification": "شهادة الأصالة",
+    "shipping": "الشحن",
+    "returns": "الإرجاع"
+  },
+  "cart": {
+    "title": "سلة التسوق",
+    "empty": "سلتك فارغة",
+    "continueShopping": "متابعة التسوق",
+    "subtotal": "المجموع الفرعي",
+    "shipping": "الشحن",
+    "tax": "الضريبة",
+    "discount": "الخصم",
+    "total": "المجموع",
+    "checkout": "إتمام الشراء",
+    "remove": "إزالة",
+    "coupon": "كود الخصم",
+    "apply": "تطبيق"
+  },
+  "checkout": {
+    "title": "إتمام الشراء",
+    "shipping": "بيانات الشحن",
+    "payment": "طريقة الدفع",
+    "review": "مراجعة الطلب",
+    "placeOrder": "تأكيد الطلب",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "city": "المدينة",
+    "country": "الدولة",
+    "postalCode": "الرمز البريدي"
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "submit": "دخول",
+      "or": "أو",
+      "google": "الدخول بـ Google",
+      "noAccount": "ليس لديك حساب؟",
+      "register": "إنشاء حساب"
+    },
+    "register": {
+      "title": "إنشاء حساب",
+      "name": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "submit": "إنشاء حساب",
+      "or": "أو",
+      "google": "التسجيل بـ Google",
+      "hasAccount": "لديك حساب بالفعل؟",
+      "login": "تسجيل الدخول"
+    }
+  },
+  "about": {
+    "title": "من نحن",
+    "story": "قصتنا",
+    "storyText": "فيلالي عديب - حرفي مجوهرات مغربي بخبرة تمتد لسنوات. نقدم لكم أرقى التصاميم وأجود أنواع الذهب بأسعار تنافسية.",
+    "workshop": "ورشتنا",
+    "certificates": "شهاداتنا",
+    "values": "قيمنا"
+  },
+  "contact": {
+    "title": "اتصل بنا",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "subject": "الموضوع",
+    "message": "الرسالة",
+    "submit": "إرسال",
+    "info": {
+      "address": "العنوان",
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني",
+      "hours": "ساعات العمل"
+    }
+  },
+  "footer": {
+    "about": "عن فيليالي عديب",
+    "aboutText": "حرفي مجوهرات بخبرة تمتد لسنوات في صناعة وبيع وشراء الذهب.",
+    "quickLinks": "روابط سريعة",
+    "customerService": "خدمة العملاء",
+    "followUs": "تابعنا",
+    "copyright": "جميع الحقوق محفوظة"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "welcome": "مرحباً",
+      "stats": {
+        "revenue": "الإيرادات",
+        "orders": "الطلبات",
+        "products": "المنتجات",
+        "customers": "العملاء"
+      }
+    },
+    "products": {
+      "title": "المنتجات",
+      "add": "إضافة منتج",
+      "edit": "تعديل منتج",
+      "delete": "حذف منتج"
+    },
+    "orders": {
+      "title": "الطلبات",
+      "status": "حالة الطلب"
+    },
+    "pricing": {
+      "title": "التسعير",
+      "goldPrice": "سعر الذهب",
+      "profitMargin": "هامش الربح"
+    }
+  }
+}

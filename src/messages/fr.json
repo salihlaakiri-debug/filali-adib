@@ -1,0 +1,224 @@
+{
+  "common": {
+    "appName": "Filali Adib - Artiste Joaillier",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "viewAll": "Voir Tout",
+    "readMore": "Lire la Suite",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "noResults": "Aucun résultat trouvé",
+    "currency": "Dirham Marocain",
+    "currencyShort": "MAD"
+  },
+  "nav": {
+    "home": "Accueil",
+    "products": "Produits",
+    "about": "À Propos",
+    "contact": "Contact",
+    "cart": "Panier",
+    "account": "Compte",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion",
+    "admin": "Tableau de Bord",
+    "orders": "Commandes",
+    "favorites": "Favoris",
+    "search": "Rechercher"
+  },
+  "home": {
+    "hero": {
+      "title": "Filali Adib",
+      "subtitle": "Artiste Joaillier",
+      "description": "Expertise et savoir-faire dans le commerce de l'or au Maroc",
+      "shopNow": "Acheter",
+      "learnMore": "En Savoir Plus"
+    },
+    "featured": {
+      "title": "Produits Vedettes",
+      "subtitle": "Découvrez notre collection de bijoux en or"
+    },
+    "categories": {
+      "title": "Nos Catégories",
+      "subtitle": "Parcourir par catégorie"
+    },
+    "about": {
+      "title": "Notre Histoire",
+      "subtitle": "Un artisan joaillier avec des années d'expérience",
+      "description": "Nous sommes un magasin spécialisé dans l'achat et la vente d'or et de bijoux au Maroc. Avec des années d'expérience, nous vous offrons les plus beaux designs et les meilleurs ors à des prix compétitifs.",
+      "features": {
+        "quality": "Or de Haute Qualité",
+        "expertise": "Expertise et Professionnalisme",
+        "trust": "Confiance et Intégrité"
+      }
+    },
+    "newsletter": {
+      "title": "Abonnez-vous à notre Newsletter",
+      "description": "Recevez les dernières offres et réductions",
+      "placeholder": "Votre email",
+      "subscribe": "S'abonner"
+    }
+  },
+  "products": {
+    "title": "Produits",
+    "subtitle": "Découvrez notre collection de luxe",
+    "filters": {
+      "category": "Catégorie",
+      "karat": "Carat",
+      "price": "Prix",
+      "weight": "Poids",
+      "all": "Tous",
+      "clear": "Effacer les Filtres"
+    },
+    "sort": {
+      "newest": "Plus Récent",
+      "priceLow": "Prix: Croissant",
+      "priceHigh": "Prix: Décroissant",
+      "popular": "Plus Populaire"
+    },
+    "grid": {
+      "view": "Grille",
+      "list": "Liste"
+    },
+    "empty": "Aucun produit disponible"
+  },
+  "product": {
+    "addToCart": "Ajouter au Panier",
+    "addToFavorites": "Ajouter aux Favoris",
+    "share": "Partager",
+    "description": "Description",
+    "specifications": "Spécifications",
+    "reviews": "Avis",
+    "related": "Produits Similaires",
+    "inStock": "En Stock",
+    "outOfStock": "Rupture de Stock",
+    "quantity": "Quantité",
+    "weight": "Poids",
+    "karat": "Carat",
+    "certification": "Certificat d'Authenticité",
+    "shipping": "Livraison",
+    "returns": "Retours"
+  },
+  "cart": {
+    "title": "Panier",
+    "empty": "Votre panier est vide",
+    "continueShopping": "Continuer les Achats",
+    "subtotal": "Sous-total",
+    "shipping": "Livraison",
+    "tax": "Taxe",
+    "discount": "Réduction",
+    "total": "Total",
+    "checkout": "Passer à la Caisse",
+    "remove": "Supprimer",
+    "coupon": "Code Promo",
+    "apply": "Appliquer"
+  },
+  "checkout": {
+    "title": "Passer à la Caisse",
+    "shipping": "Informations de Livraison",
+    "payment": "Mode de Paiement",
+    "review": "Révision de la Commande",
+    "placeOrder": "Confirmer la Commande",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "city": "Ville",
+    "country": "Pays",
+    "postalCode": "Code Postal"
+  },
+  "auth": {
+    "login": {
+      "title": "Connexion",
+      "email": "Email",
+      "password": "Mot de Passe",
+      "forgotPassword": "Mot de Passe Oublié?",
+      "submit": "Se Connecter",
+      "or": "ou",
+      "google": "Se Connecter avec Google",
+      "noAccount": "Pas de compte?",
+      "register": "S'inscrire"
+    },
+    "register": {
+      "title": "S'inscrire",
+      "name": "Nom Complet",
+      "email": "Email",
+      "phone": "Téléphone",
+      "password": "Mot de Passe",
+      "confirmPassword": "Confirmer le Mot de Passe",
+      "submit": "S'inscrire",
+      "or": "ou",
+      "google": "S'inscrire avec Google",
+      "hasAccount": "Déjà un compte?",
+      "login": "Se Connecter"
+    }
+  },
+  "about": {
+    "title": "À Propos",
+    "story": "Notre Histoire",
+    "storyText": "Filali Adib - Un artisan joaillier marocain avec des années d'expérience. Nous vous offrons les plus beaux designs et les meilleurs ors à des prix compétitifs.",
+    "workshop": "Notre Atelier",
+    "certificates": "Nos Certificats",
+    "values": "Nos Valeurs"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "name": "Nom",
+    "email": "Email",
+    "subject": "Sujet",
+    "message": "Message",
+    "submit": "Envoyer",
+    "info": {
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "Email",
+      "hours": "Heures d'Ouverture"
+    }
+  },
+  "footer": {
+    "about": "À Propos de Filali Adib",
+    "aboutText": "Un artisan joaillier avec des années d'expérience dans le commerce de l'or.",
+    "quickLinks": "Liens Rapides",
+    "customerService": "Service Client",
+    "followUs": "Suivez-nous",
+    "copyright": "Tous Droits Réservés"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de Bord",
+      "welcome": "Bienvenue",
+      "stats": {
+        "revenue": "Revenus",
+        "orders": "Commandes",
+        "products": "Produits",
+        "customers": "Clients"
+      }
+    },
+    "products": {
+      "title": "Produits",
+      "add": "Ajouter un Produit",
+      "edit": "Modifier le Produit",
+      "delete": "Supprimer le Produit"
+    },
+    "orders": {
+      "title": "Commandes",
+      "status": "Statut de la Commande"
+    },
+    "pricing": {
+      "title": "Tarification",
+      "goldPrice": "Prix de l'Or",
+      "profitMargin": "Marge Bénéficiaire"
+    }
+  }
+}

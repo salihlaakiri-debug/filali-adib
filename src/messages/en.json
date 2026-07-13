@@ -1,0 +1,224 @@
+{
+  "common": {
+    "appName": "Filali Adib - Artiste Joaillier",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "viewAll": "View All",
+    "readMore": "Read More",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "noResults": "No results found",
+    "currency": "Moroccan Dirham",
+    "currencyShort": "MAD"
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About",
+    "contact": "Contact",
+    "cart": "Cart",
+    "account": "Account",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "admin": "Dashboard",
+    "orders": "Orders",
+    "favorites": "Favorites",
+    "search": "Search"
+  },
+  "home": {
+    "hero": {
+      "title": "Filali Adib",
+      "subtitle": "Artiste Joaillier",
+      "description": "Expertise and craftsmanship in gold trading in Morocco",
+      "shopNow": "Shop Now",
+      "learnMore": "Learn More"
+    },
+    "featured": {
+      "title": "Featured Products",
+      "subtitle": "Discover our luxury gold jewelry collection"
+    },
+    "categories": {
+      "title": "Our Categories",
+      "subtitle": "Browse by category"
+    },
+    "about": {
+      "title": "Our Story",
+      "subtitle": "A jewelry artisan with years of experience",
+      "description": "We are a specialized store for buying and selling gold and jewelry in Morocco. With years of experience, we offer you the finest designs and finest gold at competitive prices.",
+      "features": {
+        "quality": "High Quality Gold",
+        "expertise": "Expertise & Professionalism",
+        "trust": "Trust & Integrity"
+      }
+    },
+    "newsletter": {
+      "title": "Subscribe to our Newsletter",
+      "description": "Get the latest offers and discounts",
+      "placeholder": "Your email",
+      "subscribe": "Subscribe"
+    }
+  },
+  "products": {
+    "title": "Products",
+    "subtitle": "Discover our luxury collection",
+    "filters": {
+      "category": "Category",
+      "karat": "Karat",
+      "price": "Price",
+      "weight": "Weight",
+      "all": "All",
+      "clear": "Clear Filters"
+    },
+    "sort": {
+      "newest": "Newest",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "popular": "Most Popular"
+    },
+    "grid": {
+      "view": "Grid",
+      "list": "List"
+    },
+    "empty": "No products available"
+  },
+  "product": {
+    "addToCart": "Add to Cart",
+    "addToFavorites": "Add to Favorites",
+    "share": "Share",
+    "description": "Description",
+    "specifications": "Specifications",
+    "reviews": "Reviews",
+    "related": "Related Products",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "quantity": "Quantity",
+    "weight": "Weight",
+    "karat": "Karat",
+    "certification": "Certificate of Authenticity",
+    "shipping": "Shipping",
+    "returns": "Returns"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax",
+    "discount": "Discount",
+    "total": "Total",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "coupon": "Coupon Code",
+    "apply": "Apply"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shipping": "Shipping Information",
+    "payment": "Payment Method",
+    "review": "Order Review",
+    "placeOrder": "Place Order",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "postalCode": "Postal Code"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot Password?",
+      "submit": "Login",
+      "or": "or",
+      "google": "Login with Google",
+      "noAccount": "Don't have an account?",
+      "register": "Register"
+    },
+    "register": {
+      "title": "Register",
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Register",
+      "or": "or",
+      "google": "Register with Google",
+      "hasAccount": "Already have an account?",
+      "login": "Login"
+    }
+  },
+  "about": {
+    "title": "About Us",
+    "story": "Our Story",
+    "storyText": "Filali Adib - A Moroccan jewelry artisan with years of experience. We offer you the finest designs and finest gold at competitive prices.",
+    "workshop": "Our Workshop",
+    "certificates": "Our Certificates",
+    "values": "Our Values"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "name": "Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "submit": "Send",
+    "info": {
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "hours": "Working Hours"
+    }
+  },
+  "footer": {
+    "about": "About Filali Adib",
+    "aboutText": "A jewelry artisan with years of experience in gold trading.",
+    "quickLinks": "Quick Links",
+    "customerService": "Customer Service",
+    "followUs": "Follow Us",
+    "copyright": "All Rights Reserved"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome",
+      "stats": {
+        "revenue": "Revenue",
+        "orders": "Orders",
+        "products": "Products",
+        "customers": "Customers"
+      }
+    },
+    "products": {
+      "title": "Products",
+      "add": "Add Product",
+      "edit": "Edit Product",
+      "delete": "Delete Product"
+    },
+    "orders": {
+      "title": "Orders",
+      "status": "Order Status"
+    },
+    "pricing": {
+      "title": "Pricing",
+      "goldPrice": "Gold Price",
+      "profitMargin": "Profit Margin"
+    }
+  }
+}
