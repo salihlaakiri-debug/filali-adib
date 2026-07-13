@@ -2,9 +2,10 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect, use } from "react";
-import { ShoppingBag, Heart, Share2, Minus, Plus, Shield, Truck, RotateCcw, Loader2 } from "lucide-react";
+import { ShoppingBag, Heart, Share2, Minus, Plus, Shield, Truck, RotateCcw, Loader2, Star, Send } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { DiamondIcon } from "@/components/icons";
 import { useToast } from "@/components/motion/Toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -42,6 +43,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFav, setIsFav] = useState(false);
+  const { data: session } = useSession();
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewStats, setReviewStats] = useState({ total: 0, average: 0 });
+  const [reviewText, setReviewText] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const handleToggleFavorite = () => {
     if (!product) return;
@@ -58,9 +65,40 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   useEffect(() => {
     fetch(`/api/products?slug=${slug}`)
       .then((r) => r.json())
-      .then((data) => { if (data.products?.length > 0) setProduct(data.products[0]); })
+      .then((data) => {
+        if (data.products?.length > 0) {
+          const p = data.products[0];
+          setProduct(p);
+          fetch(`/api/reviews?productId=${p.id}`)
+            .then((r) => r.json())
+            .then((d) => { setReviews(d.reviews || []); setReviewStats({ total: d.total, average: d.average }); })
+            .catch(() => {});
+        }
+      })
       .finally(() => setLoading(false));
   }, [slug]);
+
+  const handleSubmitReview = async () => {
+    if (!product || !reviewText.trim()) return;
+    setSubmittingReview(true);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product.id, rating: reviewRating, comment: reviewText }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setReviews((prev) => [{ ...data.review, user: { name: session?.user?.name || "Anonymous" } }, ...prev]);
+        setReviewStats((prev) => ({ total: prev.total + 1, average: ((prev.average * prev.total) + reviewRating) / (prev.total + 1) }));
+        setReviewText("");
+        setReviewRating(5);
+        addToast("تم نشر تقييمك بنجاح");
+      } else {
+        addToast("حدث خطأ في نشر التقييم");
+      }
+    } catch { addToast("حدث خطأ"); } finally { setSubmittingReview(false); }
+  };
 
   if (loading) {
     return (
@@ -252,8 +290,65 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   </motion.div>
                 )}
                 {activeTab === "reviews" && (
-                  <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }} className="text-center py-8 text-gray-500">
-                    <p>لا توجد تقييمات بعد</p>
+                  <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+                    {/* Review Summary */}
+                    <div className="flex items-center gap-4 mb-6 p-4 bg-gold/5 rounded-xl">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-gold">{reviewStats.average || "0"}</p>
+                        <div className="flex gap-0.5 my-1">
+                          {[1,2,3,4,5].map((s) => <Star key={s} size={14} className={s <= Math.round(reviewStats.average) ? "text-gold fill-gold" : "text-gray-300"} />)}
+                        </div>
+                        <p className="text-xs text-gray-500">{reviewStats.total} تقييم</p>
+                      </div>
+                    </div>
+
+                    {/* Submit Review */}
+                    {session && (
+                      <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                        <p className="text-sm font-medium text-secondary mb-2">أضف تقييمك</p>
+                        <div className="flex gap-1 mb-3">
+                          {[1,2,3,4,5].map((s) => (
+                            <button key={s} onClick={() => setReviewRating(s)} className="transition-colors">
+                              <Star size={22} className={s <= reviewRating ? "text-gold fill-gold" : "text-gray-300 hover:text-gold"} />
+                            </button>
+                          ))}
+                        </div>
+                        <textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} rows={3}
+                          placeholder="اكتب تجربتك مع المنتج..."
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gold resize-none" />
+                        <motion.button onClick={handleSubmitReview} disabled={submittingReview || !reviewText.trim()}
+                          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                          className="mt-2 bg-gold text-secondary px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+                          {submittingReview ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                          نشر التقييم
+                        </motion.button>
+                      </div>
+                    )}
+
+                    {/* Reviews List */}
+                    {reviews.length === 0 ? (
+                      <p className="text-center py-8 text-gray-500">لا توجد تقييمات بعد. كن أول من يقيّم!</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {reviews.map((review) => (
+                          <div key={review.id} className="border border-gray-100 rounded-xl p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-gold/10 rounded-full flex items-center justify-center text-gold text-sm font-bold">
+                                  {review.user?.name?.charAt(0) || "?"}
+                                </div>
+                                <span className="font-medium text-sm text-secondary">{review.user?.name}</span>
+                              </div>
+                              <div className="flex gap-0.5">
+                                {[1,2,3,4,5].map((s) => <Star key={s} size={12} className={s <= review.rating ? "text-gold fill-gold" : "text-gray-300"} />)}
+                              </div>
+                            </div>
+                            {review.comment && <p className="text-gray-600 text-sm">{review.comment}</p>}
+                            <p className="text-xs text-gray-400 mt-2">{new Date(review.createdAt).toLocaleDateString("ar-MA")}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
