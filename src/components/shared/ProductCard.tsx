@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { ShoppingBag, Heart } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { DiamondIcon } from "@/components/icons";
@@ -28,6 +29,8 @@ interface ProductCardProps {
 export function ProductCard({ product, viewMode }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
   const { addToast } = useToast();
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const karatNum = parseInt(product.karat.replace("K", ""));
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -47,7 +50,7 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
 
   if (viewMode === "list") {
     return (
-      <Link href={`/products/${product.slug}`}>
+      <Link href={L(`/products/${product.slug}`)}>
         <motion.div
           whileHover={{ x: 4 }}
           className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex border border-gray-50"

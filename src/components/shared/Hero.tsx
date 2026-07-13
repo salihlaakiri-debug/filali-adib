@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
@@ -38,6 +38,8 @@ function GoldParticles() {
 
 export function Hero() {
   const t = useTranslations("home.hero");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -120,7 +122,7 @@ export function Hero() {
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
-              href="/products"
+              href={L("/products")}
               className="bg-gold text-secondary px-10 py-4 rounded-full font-semibold hover:bg-gold-dark transition-all shadow-lg shadow-gold/20 hover:shadow-gold/40 inline-flex items-center gap-2"
             >
               {t("shopNow")}
@@ -131,7 +133,7 @@ export function Hero() {
           </motion.div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
-              href="/about"
+              href={L("/about")}
               className="border-2 border-gold/50 text-gold px-10 py-4 rounded-full font-semibold hover:bg-gold/10 hover:border-gold transition-all inline-flex items-center gap-2"
             >
               {t("learnMore")}

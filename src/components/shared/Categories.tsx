@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
 import { RingIcon, NecklaceIcon, EarringIcon, BraceletIcon, CrownIcon, DiamondIcon } from "@/components/icons";
@@ -17,6 +17,8 @@ const categories = [
 
 export function Categories() {
   const t = useTranslations("home.categories");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
 
   return (
     <section className="py-20 px-4 bg-light relative overflow-hidden">
@@ -33,7 +35,7 @@ export function Categories() {
             <StaggerItem key={category.id}>
               <motion.div whileHover={{ y: -8 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
                 <Link
-                  href={`/products?category=${category.slug}`}
+                  href={L(`/products?category=${category.slug}`)}
                   className="group block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 border border-gray-100"
                 >
                   <div className="relative h-44 overflow-hidden">

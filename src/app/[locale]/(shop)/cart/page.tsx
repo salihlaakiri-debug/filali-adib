@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { Trash2, Plus, Minus, ShoppingBag, Tag } from "lucide-react";
 import { useCartStore } from "@/lib/store";
@@ -12,6 +12,8 @@ import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
 
 export default function CartPage() {
   const t = useTranslations("cart");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const { items, removeItem, updateQuantity, getSubtotal, getShipping, getTax, getTotal } = useCartStore();
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -47,7 +49,7 @@ export default function CartPage() {
             <ShoppingBag size={64} className="text-gray-300 mx-auto mb-4" />
           </motion.div>
           <h1 className="font-playfair text-2xl font-bold text-secondary mb-2">{t("empty")}</h1>
-          <Link href="/products"
+          <Link href={L("/products")}
             className="inline-block bg-gold text-secondary px-6 py-3 rounded-xl font-semibold hover:bg-gold-dark transition-all mt-4 shadow-lg shadow-gold/20">
             {t("continueShopping")}
           </Link>
@@ -71,7 +73,7 @@ export default function CartPage() {
                 <StaggerItem key={item.id}>
                   <motion.div layout exit={{ opacity: 0, x: -100, transition: { duration: 0.3 } }}
                     className="bg-white rounded-xl p-6 shadow-sm flex gap-4 hover:shadow-md transition-shadow">
-                    <Link href={`/products/${item.slug}`}>
+                    <Link href={L(`/products/${item.slug}`)}>
                       <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden hover:scale-105 transition-transform">
                         <DiamondIcon size={32} className="text-gold/40" />
                       </div>
@@ -80,7 +82,7 @@ export default function CartPage() {
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <Link href={`/products/${item.slug}`}>
+                          <Link href={L(`/products/${item.slug}`)}>
                             <h3 className="font-semibold text-secondary hover:text-gold transition-colors">{item.name}</h3>
                           </Link>
                           <p className="text-sm text-gray-500">عيار {item.karat} - {item.weight}غ</p>
@@ -149,11 +151,11 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Link href="/checkout"
+                <Link href={L("/checkout")}
                   className="block w-full bg-gold text-secondary py-3 rounded-lg font-semibold text-center hover:bg-gold-dark transition-all mt-6 shadow-lg shadow-gold/20 hover:shadow-gold/40">
                   {t("checkout")}
                 </Link>
-                <Link href="/products" className="block text-center text-gold hover:text-gold-dark text-sm mt-4 transition-colors">
+                <Link href={L("/products")} className="block text-center text-gold hover:text-gold-dark text-sm mt-4 transition-colors">
                   {t("continueShopping")}
                 </Link>
               </div>

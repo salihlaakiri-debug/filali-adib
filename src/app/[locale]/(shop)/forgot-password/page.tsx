@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FaLogo } from "@/components/icons";
@@ -10,6 +10,8 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +51,7 @@ export default function ForgotPasswordPage() {
                 {loading ? "جاري الإرسال..." : "إرسال رابط إعادة التعيين"}
               </motion.button>
               <p className="text-center text-sm text-gray-500 mt-4">
-                <a href="/login" className="text-gold hover:text-gold-dark font-medium">العودة لتسجيل الدخول</a>
+                <a href={L("/login")} className="text-gold hover:text-gold-dark font-medium">العودة لتسجيل الدخول</a>
               </p>
             </form>
           )}

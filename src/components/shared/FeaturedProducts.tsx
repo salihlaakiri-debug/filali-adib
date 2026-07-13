@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useState, useEffect } from "react";
@@ -24,6 +24,8 @@ interface Product {
 
 export function FeaturedProducts() {
   const t = useTranslations("home.featured");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const addItem = useCartStore((s) => s.addItem);
   const [products, setProducts] = useState<Product[]>([]);
   const { addToast } = useToast();
@@ -71,7 +73,7 @@ export function FeaturedProducts() {
                   className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-500"
                   whileHover={{ y: -6 }}
                 >
-                  <Link href={`/products/${product.slug}`}>
+                  <Link href={L(`/products/${product.slug}`)}>
                     <div className="relative aspect-square bg-gray-100 overflow-hidden">
                       {product.images && product.images.length > 0 ? (
                         <img
@@ -126,7 +128,7 @@ export function FeaturedProducts() {
         <FadeIn delay={0.3} className="text-center mt-12">
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
             <Link
-              href="/products"
+              href={L("/products")}
               className="bg-secondary text-white px-10 py-3.5 rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/10 hover:shadow-secondary/20 inline-flex items-center gap-2"
             >
               عرض جميع المنتجات

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Plus, Edit2, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { DiamondIcon } from "@/components/icons";
@@ -21,6 +21,8 @@ interface Product {
 
 export default function AdminProductsPage() {
   const t = useTranslations("admin.products");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +40,7 @@ export default function AdminProductsPage() {
         className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-gray-800">{t("title")}</h1>
         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-          <Link href="/admin/products/new"
+          <Link href={L("/admin/products/new")}
             className="bg-gold text-secondary px-4 py-2 rounded-lg font-medium hover:bg-gold-dark transition-colors flex items-center gap-2 shadow-lg shadow-gold/20">
             <Plus size={18} /> {t("add")}
           </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingBag, Search, User, Heart } from "lucide-react";
@@ -10,6 +10,7 @@ import { FaLogo } from "@/components/icons";
 
 export function Navbar() {
   const t = useTranslations();
+  const locale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const itemCount = useCartStore((s) => s.getItemCount());
@@ -19,6 +20,8 @@ export function Navbar() {
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
 
   const navLinks = [
     { href: "/", label: t("nav.home") },
@@ -41,7 +44,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href={L("/")} className="flex items-center gap-2 group">
             <motion.div
               whileHover={{ rotate: 12, scale: 1.1 }}
               transition={{ type: "spring", stiffness: 300 }}
@@ -63,7 +66,7 @@ export function Navbar() {
             {navLinks.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                href={L(link.href)}
                 className="relative text-white hover:text-gold transition-colors text-sm py-1 group"
               >
                 {link.label}
@@ -83,7 +86,7 @@ export function Navbar() {
             </motion.button>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <Link
-                href="/favorites"
+                href={L("/favorites")}
                 className="text-white hover:text-gold transition-colors hidden sm:block"
               >
                 <Heart size={20} />
@@ -91,7 +94,7 @@ export function Navbar() {
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="relative">
               <Link
-                href="/cart"
+                href={L("/cart")}
                 className="text-white hover:text-gold transition-colors"
               >
                 <ShoppingBag size={20} />
@@ -111,7 +114,7 @@ export function Navbar() {
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <Link
-                href="/login"
+                href={L("/login")}
                 className="text-white hover:text-gold transition-colors hidden sm:block"
               >
                 <User size={20} />
@@ -170,7 +173,7 @@ export function Navbar() {
                     transition={{ delay: i * 0.08 }}
                   >
                     <Link
-                      href={link.href}
+                      href={L(link.href)}
                       className="block py-3 px-4 text-white hover:text-gold hover:bg-gold/5 rounded-lg transition-colors"
                       onClick={() => setIsOpen(false)}
                     >

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
@@ -37,16 +37,18 @@ const menuItems = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const { data: session, status } = useSession();
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push(L("/login"));
     }
     if (status === "authenticated" && (session?.user as any)?.role !== "ADMIN") {
-      router.push("/");
+      router.push(L("/"));
     }
-  }, [status, session, router]);
+  }, [status, session, router, L]);
 
   if (status === "loading") {
     return (
@@ -61,7 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-500 mb-4">غير مصرح لك بالدخول</p>
-          <Link href="/login" className="bg-gold text-secondary px-6 py-2 rounded-lg font-medium">
+          <Link href={L("/login")} className="bg-gold text-secondary px-6 py-2 rounded-lg font-medium">
             تسجيل الدخول
           </Link>
         </div>
@@ -73,7 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-gray-100 flex">
       <aside className="w-64 bg-secondary text-white flex flex-col flex-shrink-0">
         <div className="p-6 border-b border-white/10">
-          <Link href="/admin/dashboard" className="flex items-center gap-2">
+          <Link href={L("/admin/dashboard")} className="flex items-center gap-2">
             <FaLogo size={28} className="text-gold" />
             <div className="flex flex-col">
               <span className="font-playfair text-gold font-bold tracking-wider text-sm">FILALI ADIBE</span>
@@ -86,7 +88,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {menuItems.map((item) => {
             const isActive = pathname.includes(item.href);
             return (
-              <Link key={item.href} href={item.href}
+              <Link key={item.href} href={L(item.href)}
                 className={`flex items-center gap-3 px-6 py-3 transition-colors ${
                   isActive ? "bg-gold/20 text-gold border-r-2 border-gold" : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}>
@@ -98,10 +100,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         <div className="p-4 border-t border-white/10 space-y-2">
-          <Link href="/" className="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-gold transition-colors text-sm">
+          <Link href={L("/")} className="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-gold transition-colors text-sm">
             <ShoppingCart size={18} /> العودة للمتجر
           </Link>
-          <button onClick={() => signOut({ callbackUrl: "/" })}
+          <button onClick={() => signOut({ callbackUrl: L("/") })}
             className="flex items-center gap-3 px-4 py-2 w-full text-gray-400 hover:text-red-400 transition-colors">
             <LogOut size={18} /> <span className="text-sm">تسجيل الخروج</span>
           </button>

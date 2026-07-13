@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,8 @@ import { motion } from "framer-motion";
 
 export default function LoginPage() {
   const t = useTranslations("auth.login");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -108,7 +110,7 @@ export default function LoginPage() {
             </motion.div>
 
             <div className="flex items-center justify-end">
-              <Link href="/forgot-password" className="text-sm text-gold hover:text-gold-dark transition-colors">
+              <Link href={L("/forgot-password")} className="text-sm text-gold hover:text-gold-dark transition-colors">
                 {t("forgotPassword")}
               </Link>
             </div>
@@ -146,7 +148,7 @@ export default function LoginPage() {
 
           <p className="text-center mt-6 text-sm text-gray-500">
             {t("noAccount")}{" "}
-            <Link href="/register" className="text-gold hover:text-gold-dark font-medium transition-colors">
+            <Link href={L("/register")} className="text-gold hover:text-gold-dark font-medium transition-colors">
               {t("register")}
             </Link>
           </p>

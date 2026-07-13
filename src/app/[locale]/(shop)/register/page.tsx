@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,8 @@ import { motion } from "framer-motion";
 
 export default function RegisterPage() {
   const t = useTranslations("auth.register");
+  const locale = useLocale();
+  const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -119,7 +121,7 @@ export default function RegisterPage() {
 
           <p className="text-center mt-6 text-sm text-gray-500">
             {t("hasAccount")}{" "}
-            <Link href="/login" className="text-gold hover:text-gold-dark font-medium transition-colors">{t("login")}</Link>
+            <Link href={L("/login")} className="text-gold hover:text-gold-dark font-medium transition-colors">{t("login")}</Link>
           </p>
         </div>
       </motion.div>
