@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingBag, Search, User, Heart } from "lucide-react";
+import { Menu, X, ShoppingBag, Search, User, Heart, LogIn } from "lucide-react";
 import { useCartStore } from "@/lib/store";
+import { useSession } from "next-auth/react";
 import { FaLogo } from "@/components/icons";
 
 export function Navbar() {
@@ -14,6 +15,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const itemCount = useCartStore((s) => s.getItemCount());
+  const { data: session } = useSession();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -181,6 +183,34 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
+                <div className="border-t border-gold/10 my-3" />
+                {session ? (
+                  <>
+                    <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.32 }}>
+                      <Link href={L("/account")} className="block py-3 px-4 text-white hover:text-gold hover:bg-gold/5 rounded-lg transition-colors" onClick={() => setIsOpen(false)}>
+                        {t("nav.account")}
+                      </Link>
+                    </motion.div>
+                    <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
+                      <Link href={L("/favorites")} className="block py-3 px-4 text-white hover:text-gold hover:bg-gold/5 rounded-lg transition-colors" onClick={() => setIsOpen(false)}>
+                        {t("nav.favorites")}
+                      </Link>
+                    </motion.div>
+                  </>
+                ) : (
+                  <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.32 }}>
+                    <Link href={L("/login")} className="flex items-center gap-3 py-3 px-4 text-gold hover:bg-gold/5 rounded-lg transition-colors" onClick={() => setIsOpen(false)}>
+                      <LogIn size={18} />
+                      {t("nav.login")}
+                    </Link>
+                  </motion.div>
+                )}
+                <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.48 }}>
+                  <Link href={L("/cart")} className="flex items-center justify-between py-3 px-4 text-white hover:text-gold hover:bg-gold/5 rounded-lg transition-colors" onClick={() => setIsOpen(false)}>
+                    <span>{t("nav.cart")}</span>
+                    {itemCount > 0 && <span className="bg-gold text-secondary text-xs px-2 py-0.5 rounded-full font-bold">{itemCount}</span>}
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           )}

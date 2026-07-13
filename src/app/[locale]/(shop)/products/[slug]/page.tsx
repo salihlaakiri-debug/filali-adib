@@ -41,6 +41,19 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [activeTab, setActiveTab] = useState<"description" | "specs" | "reviews">("description");
   const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isFav, setIsFav] = useState(false);
+
+  const handleToggleFavorite = () => {
+    if (!product) return;
+    fetch("/api/favorites", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: product.id }),
+    })
+      .then((r) => r.json())
+      .then((data) => { setIsFav(data.added); addToast(data.added ? "تمت الإضافة للمفضلة" : "تمت الإزالة من المفضلة"); })
+      .catch(() => addToast("سجّل الدخول أولاً"));
+  };
 
   useEffect(() => {
     fetch(`/api/products?slug=${slug}`)
@@ -182,9 +195,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <ShoppingBag size={20} />
                   {product.stock > 0 ? t("addToCart") : t("outOfStock")}
                 </motion.button>
-                <motion.button whileHover={{ scale: 1.1, borderColor: "#D4AF37" }} whileTap={{ scale: 0.9 }}
-                  className="p-3 border-2 border-gray-200 rounded-full hover:text-gold transition-all">
-                  <Heart size={20} />
+                <motion.button onClick={handleToggleFavorite} whileHover={{ scale: 1.1, borderColor: "#D4AF37" }} whileTap={{ scale: 0.9 }}
+                  className={`p-3 border-2 rounded-full transition-all ${isFav ? "border-red-400 text-red-500 bg-red-50" : "border-gray-200 hover:text-gold hover:border-gold"}`}>
+                  <Heart size={20} fill={isFav ? "currentColor" : "none"} />
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.1, borderColor: "#D4AF37" }} whileTap={{ scale: 0.9 }}
                   className="p-3 border-2 border-gray-200 rounded-full hover:text-gold transition-all">

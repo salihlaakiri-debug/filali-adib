@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { ShoppingBag, Heart } from "lucide-react";
+import { useState } from "react";
 import { useCartStore } from "@/lib/store";
 import { DiamondIcon } from "@/components/icons";
 import { useToast } from "@/components/motion/Toast";
@@ -32,6 +33,7 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
   const locale = useLocale();
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const karatNum = parseInt(product.karat.replace("K", ""));
+  const [isFav, setIsFav] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -46,6 +48,22 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
       stock: product.stock,
     });
     addToast(`${product.name} تمت الإضافة للسلة`);
+  };
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    fetch("/api/favorites", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: product.id }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setIsFav(data.added);
+        addToast(data.added ? "تمت الإضافة للمفضلة" : "تمت الإزالة من المفضلة");
+      })
+      .catch(() => addToast("سجّل الدخول أولاً"));
   };
 
   if (viewMode === "list") {
@@ -82,8 +100,8 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
             <div className="flex items-center justify-between mt-4">
               <span className="text-gold font-bold text-xl">{product.calculatedPrice.toLocaleString()} د.م</span>
               <div className="flex items-center gap-2">
-                <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} className="p-2 text-gray-400 hover:text-gold transition-colors">
-                  <Heart size={18} />
+                <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} onClick={handleToggleFavorite} className={`p-2 transition-colors ${isFav ? "text-red-500" : "text-gray-400 hover:text-gold"}`}>
+                  <Heart size={18} fill={isFav ? "currentColor" : "none"} />
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} onClick={handleAddToCart} className="p-2 bg-gold text-secondary rounded-full hover:bg-gold-dark transition-colors shadow-md shadow-gold/20">
                   <ShoppingBag size={18} />
@@ -112,6 +130,16 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
               جديد
             </span>
           )}
+          <motion.button
+            onClick={handleToggleFavorite}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            className={`absolute top-3 right-3 p-2 rounded-full shadow-md transition-all duration-300 ${
+              isFav ? "bg-red-50 text-red-500 opacity-100" : "bg-white/90 text-gray-400 opacity-0 group-hover:opacity-100"
+            }`}
+          >
+            <Heart size={16} fill={isFav ? "currentColor" : "none"} />
+          </motion.button>
           {/* Hover overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <motion.button

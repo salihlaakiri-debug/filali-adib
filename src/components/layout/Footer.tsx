@@ -63,7 +63,7 @@ export function Footer() {
                 {t("footer.customerService")}
               </h3>
               <ul className="space-y-3">
-                {[{ href: "/shipping", label: t("product.shipping") }, { href: "/returns", label: t("product.returns") }, { href: "/faq", label: "FAQ" }, { href: "/privacy", label: "سياسة الخصوصية" }, { href: "/terms", label: "الشروط والأحكام" }].map((link) => (
+                {[{ href: "/shipping", label: t("product.shipping") }, { href: "/returns", label: t("product.returns") }, { href: "/faq", label: "FAQ" }, { href: "/privacy", label: locale === "fr" ? "Politique de Confidentialité" : locale === "en" ? "Privacy Policy" : "سياسة الخصوصية" }, { href: "/terms", label: locale === "fr" ? "Conditions Générales" : locale === "en" ? "Terms & Conditions" : "الشروط والأحكام" }].map((link) => (
                   <li key={link.href}>
                     <Link href={L(link.href)} className="text-gray-400 hover:text-gold text-sm transition-all duration-300 hover:translate-x-1 inline-block">
                       {link.label}
