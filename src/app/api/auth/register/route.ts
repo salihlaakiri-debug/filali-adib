@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
+    if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     const body = await request.json();
     const { name, email, phone, password } = body;
 

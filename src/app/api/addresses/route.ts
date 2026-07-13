@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 
 export async function GET() {
   try {
+    if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     const session = await auth();
     if (!session) return NextResponse.json({ addresses: [] });
 
@@ -20,6 +21,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -47,6 +49,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

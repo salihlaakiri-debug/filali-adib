@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: Request) {
+  if (!db) {
+    return NextResponse.json({ products: [], pagination: { page: 1, limit: 12, total: 0, pages: 0 } });
+  }
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");

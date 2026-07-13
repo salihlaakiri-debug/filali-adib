@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
+    if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     const { code, subtotal } = await request.json();
 
     if (!code) {

@@ -22,7 +22,7 @@ declare module "next-auth" {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(db),
+  adapter: db ? PrismaAdapter(db) : undefined,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
@@ -38,7 +38,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email || !credentials?.password || !db) {
           return null;
         }
 

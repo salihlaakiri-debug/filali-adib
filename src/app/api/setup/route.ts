@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
 export async function POST() {
+  if (!db) {
+    return NextResponse.json({ ok: false, error: "DATABASE_URL not configured. Add a PostgreSQL connection string to Vercel env vars." }, { status: 503 });
+  }
   try {
     const existing = await db.user.findFirst();
     if (existing) {
@@ -18,6 +21,7 @@ export async function POST() {
 }
 
 async function seed() {
+  if (!db) throw new Error("Database not available");
   const adminPassword = await bcrypt.hash("admin123", 12);
   const customerPassword = await bcrypt.hash("customer123", 12);
 
