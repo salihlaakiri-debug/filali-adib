@@ -16,10 +16,13 @@ declare module "next-auth" {
       role: string;
       name?: string | null;
       email?: string | null;
+      phone?: string | null;
       image?: string | null;
     };
   }
 }
+
+const googleConfigured = !!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: db ? PrismaAdapter(db) : undefined,
@@ -28,22 +31,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
+    ...(googleConfigured
+      ? [
+          Google({
+            clientId: process.env.AUTH_GOOGLE_ID!,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+          }),
+        ]
+      : []),
     Credentials({
+      name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        identifier: { label: "Email or Phone", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password || !db) {
+        if (!credentials?.identifier || !credentials?.password || !db) {
           return null;
         }
 
-        const user = await db.user.findUnique({
-          where: { email: credentials.email as string },
+        const identifier = (credentials.identifier as string).trim();
+
+        const user = await db.user.findFirst({
+          where: {
+            OR: [
+              { email: identifier },
+              { phone: identifier },
+            ],
+          },
         });
 
         if (!user || !user.password) {
