@@ -50,12 +50,12 @@ export default function LoginPage() {
       });
       if (result?.error) {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
+        setLoading(false);
         return;
       }
-      window.location.href = L("/admin/dashboard");
+      router.push(L("/admin/dashboard"));
     } catch {
       setError(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
-    } finally {
       setLoading(false);
     }
   };
