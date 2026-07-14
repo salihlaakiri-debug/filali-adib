@@ -3,7 +3,7 @@
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
-import { ShoppingBag, Heart, Share2, Minus, Plus, Shield, Truck, RotateCcw, Loader2, Star, Send } from "lucide-react";
+import { ShoppingBag, Heart, Share2, Minus, Plus, Shield, Truck, RotateCcw, Loader2, Star, Send, Play, Image as ImageIcon } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -11,6 +11,12 @@ import { DiamondIcon } from "@/components/icons";
 import { useToast } from "@/components/motion/Toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeIn } from "@/components/motion";
+
+interface ProductVideo {
+  url: string;
+  type: string;
+  title?: string;
+}
 
 interface ProductData {
   id: string;
@@ -29,6 +35,7 @@ interface ProductData {
   isNew: boolean;
   certification?: string;
   images: { url: string }[];
+  videos: ProductVideo[];
   category: { name: string; slug: string };
 }
 
@@ -44,7 +51,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFav, setIsFav] = useState(false);
-  const [activeImage, setActiveImage] = useState(0);
+  const [activeMedia, setActiveMedia] = useState(0);
+  const [mediaType, setMediaType] = useState<"image" | "video">("image");
   const { data: session } = useSession();
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewStats, setReviewStats] = useState({ total: 0, average: 0 });
@@ -122,6 +130,15 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   }
 
   const karatNum = parseInt(product.karat.replace("K", ""));
+  const images = product.images || [];
+  const videos = product.videos || [];
+  const totalMedia = images.length + videos.length;
+
+  // Build a unified media list
+  const allMedia: { type: "image" | "video"; url: string; title?: string }[] = [
+    ...images.map((img) => ({ type: "image" as const, url: img.url })),
+    ...videos.map((vid) => ({ type: "video" as const, url: vid.url, title: vid.title })),
+  ];
 
   const handleAddToCart = () => {
     addItem({
@@ -146,16 +163,34 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
         <div className="grid lg:grid-cols-2 gap-12">
           <FadeIn direction="right">
+            {/* Main Media Display */}
             <div className="bg-white rounded-3xl overflow-hidden shadow-sm aspect-square relative">
               <AnimatePresence mode="wait">
-                {product.images && product.images.length > 0 ? (
-                  <motion.img
-                    key={product.images[activeImage]?.url}
+                {mediaType === "video" ? (
+                  <motion.div
+                    key={`video-${activeMedia}`}
                     initial={{ opacity: 0, scale: 1.1 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.5 }}
-                    src={product.images[activeImage]?.url}
+                    className="w-full h-full"
+                  >
+                    <iframe
+                      src={allMedia[activeMedia]?.url}
+                      title={allMedia[activeMedia]?.title || "فيديو المنتج"}
+                      className="w-full h-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </motion.div>
+                ) : images.length > 0 ? (
+                  <motion.img
+                    key={allMedia[activeMedia]?.url}
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.5 }}
+                    src={allMedia[activeMedia]?.url}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -167,25 +202,35 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               </AnimatePresence>
               {product.isNew && (
                 <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.3 }}
-                  className="absolute top-4 left-4 bg-gold text-secondary text-sm px-4 py-1 rounded-full font-medium shadow-lg">
+                  className="absolute top-4 left-4 bg-gold text-secondary text-sm px-4 py-1 rounded-full font-medium shadow-lg z-10">
                   جديد
                 </motion.span>
               )}
               {product.stock <= 0 && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
                   <span className="text-white font-bold text-xl">نفد المخزون</span>
                 </div>
               )}
             </div>
-            {/* Thumbnails */}
-            {product.images && product.images.length > 1 && (
-              <div className="flex gap-2 mt-3">
-                {product.images.map((img, i) => (
-                  <button key={i} onClick={() => setActiveImage(i)}
-                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                      i === activeImage ? "border-gold shadow-md" : "border-gray-200 opacity-60 hover:opacity-100"
-                    }`}>
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+
+            {/* Thumbnails (images + video indicators) */}
+            {totalMedia > 1 && (
+              <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide pb-2">
+                {allMedia.map((media, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setActiveMedia(i); setMediaType(media.type); }}
+                    className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                      i === activeMedia ? "border-gold shadow-md" : "border-gray-200 opacity-60 hover:opacity-100"
+                    }`}
+                  >
+                    {media.type === "video" ? (
+                      <div className="w-full h-full bg-secondary flex items-center justify-center">
+                        <Play size={16} className="text-gold" fill="currentColor" />
+                      </div>
+                    ) : (
+                      <img src={media.url} alt="" className="w-full h-full object-cover" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -291,11 +336,32 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <motion.div key="desc" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
                     <p className="text-gray-600 leading-relaxed mb-4">{product.description || "لا يوجد وصف متاح"}</p>
                     {product.descriptionFr && <p className="text-gray-600 leading-relaxed">{product.descriptionFr}</p>}
+                    {videos.length > 0 && (
+                      <div className="mt-6 pt-6 border-t border-gray-100">
+                        <h4 className="font-semibold text-secondary mb-3 flex items-center gap-2">
+                          <Play size={18} className="text-gold" />
+                          فيديوهات المنتج
+                        </h4>
+                        <div className="grid gap-4">
+                          {videos.map((vid, i) => (
+                            <div key={i} className="aspect-video rounded-xl overflow-hidden bg-gray-100">
+                              <iframe
+                                src={vid.url}
+                                title={vid.title || `فيديو ${i + 1}`}
+                                className="w-full h-full border-0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 )}
                 {activeTab === "specs" && (
                   <motion.div key="specs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }} className="space-y-3">
-                    {[{ label: t("weight"), value: `${product.weight}g` }, { label: t("karat"), value: `عيار ${karatNum}` }, ...(product.certification ? [{ label: t("certification"), value: product.certification }] : []), { label: "الفئة", value: product.category?.name }].map((item, i) => (
+                    {[{ label: t("weight"), value: `${product.weight}g` }, { label: t("karat"), value: `عيار ${karatNum}` }, { label: "الصور", value: `${images.length} صورة` }, { label: "الفيديوهات", value: `${videos.length} فيديو` }, ...(product.certification ? [{ label: t("certification"), value: product.certification }] : []), { label: "الفئة", value: product.category?.name }].map((item, i) => (
                       <div key={i} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
                         <span className="text-gray-500">{item.label}</span>
                         <span className="font-medium">{item.value}</span>
@@ -305,7 +371,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 )}
                 {activeTab === "reviews" && (
                   <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
-                    {/* Review Summary */}
                     <div className="flex items-center gap-4 mb-6 p-4 bg-gold/5 rounded-xl">
                       <div className="text-center">
                         <p className="text-3xl font-bold text-gold">{reviewStats.average || "0"}</p>
@@ -316,7 +381,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       </div>
                     </div>
 
-                    {/* Submit Review */}
                     {session && (
                       <div className="mb-6 p-4 bg-gray-50 rounded-xl">
                         <p className="text-sm font-medium text-secondary mb-2">أضف تقييمك</p>
@@ -339,7 +403,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       </div>
                     )}
 
-                    {/* Reviews List */}
                     {reviews.length === 0 ? (
                       <p className="text-center py-8 text-gray-500">لا توجد تقييمات بعد. كن أول من يقيّم!</p>
                     ) : (

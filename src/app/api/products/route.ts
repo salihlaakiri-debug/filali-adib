@@ -49,6 +49,7 @@ export async function GET(request: Request) {
         take: limit,
         include: {
           images: true,
+          videos: true,
           category: true,
         },
       }),

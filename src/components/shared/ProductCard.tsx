@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
-import { ShoppingBag, Heart } from "lucide-react";
+import { ShoppingBag, Heart, Play } from "lucide-react";
 import { useState } from "react";
 import { useCartStore } from "@/lib/store";
 import { DiamondIcon } from "@/components/icons";
@@ -20,6 +20,7 @@ interface Product {
   isNew?: boolean;
   stock: number;
   images?: { url: string }[];
+  videos?: { url: string; type: string }[];
 }
 
 interface ProductCardProps {
@@ -182,6 +183,17 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
                 className="bg-gold text-secondary text-xs px-3 py-1 rounded-full font-bold shadow-lg shadow-gold/30 backdrop-blur-sm"
               >
                 جديد
+              </motion.span>
+            )}
+            {product.videos && product.videos.length > 0 && (
+              <motion.span
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="bg-secondary/80 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-lg"
+              >
+                <Play size={10} fill="currentColor" />
+                {product.videos.length} فيديو
               </motion.span>
             )}
           </div>

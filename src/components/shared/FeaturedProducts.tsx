@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Play } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useState, useEffect } from "react";
 import { DiamondIcon } from "@/components/icons";
@@ -20,6 +20,7 @@ interface Product {
   karat: string;
   stock: number;
   images?: { url: string }[];
+  videos?: { url: string; type: string }[];
 }
 
 export function FeaturedProducts() {
