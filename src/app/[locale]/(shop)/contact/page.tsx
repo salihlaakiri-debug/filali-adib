@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { FadeIn, StaggerContainer, StaggerItem, TextReveal } from "@/components/motion";
 import { useToast } from "@/components/motion/Toast";
 
-const WHATSAPP_NUMBER = "212600000000";
+const WHATSAPP_NUMBER = "212644690861";
 
 export default function ContactPage() {
   const t = useTranslations("contact");
@@ -30,8 +30,8 @@ export default function ContactPage() {
 
   const contactItems = [
     { icon: MapPin, label: t("info.address"), value: "الطالعة الكبيرة 42، فاس المرينية\nفاس 30000، المغرب", action: "https://maps.google.com/?q=Fes+Medina+Talaa+Kebira" },
-    { icon: Phone, label: t("info.phone"), value: "+212 5 35 63 XX XX", action: "tel:+212535630000" },
-    { icon: MessageCircle, label: "واتساب", value: "+212 6 00 00 00 00", action: `https://wa.me/${WHATSAPP_NUMBER}` },
+    { icon: Phone, label: t("info.phone"), value: "+212 6 44 69 08 61", action: "tel:+212644690861" },
+    { icon: MessageCircle, label: "واتساب", value: "+212 6 44 69 08 61", action: `https://wa.me/${WHATSAPP_NUMBER}` },
     { icon: Mail, label: t("info.email"), value: "contact@filaliadib.com", action: "mailto:contact@filaliadib.com" },
     { icon: Clock, label: t("info.hours"), value: "الاثنين - السبت: 9:30 - 20:00\nالأحد: 10:00 - 14:00" },
   ];

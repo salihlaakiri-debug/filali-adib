@@ -119,7 +119,7 @@ export default async function LocaleLayout({
                 addressCountry: "MA",
                 postalCode: "30000",
               },
-              telephone: "+212535630000",
+              telephone: "+212644690861",
               email: "contact@filaliadib.com",
               priceRange: "$$$$",
               currenciesAccepted: "MAD",

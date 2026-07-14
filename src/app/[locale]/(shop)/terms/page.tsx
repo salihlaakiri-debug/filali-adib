@@ -90,7 +90,7 @@ export default function TermsPage() {
               <p className="text-gray-600 leading-relaxed">
                 لأي استفسار حول الشروط والأحكام:
               </p>
-              <p className="text-gold font-medium mt-2">contact@filaliadib.com | +212 5 35 63 XX XX</p>
+              <p className="text-gold font-medium mt-2">contact@filaliadib.com | +212 6 44 69 08 61</p>
             </div>
           </div>
         </div>

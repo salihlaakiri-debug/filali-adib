@@ -172,7 +172,7 @@ export default function AboutPage() {
             <p className="text-gray-300 mb-8 max-w-xl mx-auto">
               نستقبلكم في متجرنا位于 قلب فاس المرينية للاطلاع على تشكيلتنا الحصرية والاستشارة مع خبرائنا
             </p>
-            <a href="https://wa.me/212600000000?text=مرحباً، أريد زيارة المتجر" target="_blank" rel="noopener noreferrer"
+            <a href="https://wa.me/212644690861?text=مرحباً، أريد زيارة المتجر" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-gold text-secondary px-8 py-3 rounded-full font-semibold hover:bg-gold-dark transition-all shadow-lg shadow-gold/20">
               احجز زيارتك
             </a>

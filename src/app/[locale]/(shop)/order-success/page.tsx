@@ -7,7 +7,7 @@ import { CheckCircle, Package, ArrowLeft, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { FadeIn } from "@/components/motion";
 
-const WHATSAPP_NUMBER = "212600000000";
+const WHATSAPP_NUMBER = "212644690861";
 
 export default function OrderSuccessPage() {
   const t = useTranslations("checkout");
