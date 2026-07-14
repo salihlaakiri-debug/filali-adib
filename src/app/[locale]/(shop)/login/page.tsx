@@ -4,7 +4,7 @@ import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import {
   Eye, EyeOff, Loader2, ArrowLeft, Lock, Mail, Shield, Phone,
   Check, Sparkles,
@@ -43,17 +43,33 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      const result = await signIn("credentials", {
-        identifier,
-        password: formData.password,
-        redirect: false,
+
+      const csrfRes = await fetch("/api/auth/csrf");
+      const { csrfToken } = await csrfRes.json();
+
+      const authRes = await fetch("/api/auth/callback/credentials", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          identifier,
+          password: formData.password,
+          csrfToken,
+          callbackUrl: "/",
+          redirect: "false",
+          json: "true",
+        }),
+        redirect: "manual",
       });
-      if (result?.error) {
+
+      if (authRes.status === 401 || authRes.status === 403) {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
         return;
       }
-      const session = await getSession();
-      const role = (session?.user as any)?.role;
+
+      const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
+      const session = await sessionRes.json();
+      const role = session?.user?.role;
+
       if (role === "ADMIN" || role === "SUPER_ADMIN") {
         window.location.href = L("/admin/dashboard");
       } else {
