@@ -312,6 +312,57 @@ async function main() {
       sku: "FA-SPC-002", karat: "K21", weight: 35, goldPrice: 1300, profitMargin: 800,
       calculatedPrice: 57050, stock: 1, isFeatured: false, isNew: false, certification: "شهادة تحفة فنية", categoryId: special.id,
     },
+
+    // === ADDITIONAL PRODUCTS (7 more to reach 35) ===
+    {
+      name: "خاتم كارتيه ذهبي عيار 21", nameFr: "Bague Cartier style en or 21 carats",
+      slug: "cartier-style-ring-21k", description: "خاتم بأسلوب كارتيه الكلاسيكي من الذهب عيار 21. تصميم أيقوني يعكس الذوق الرفيع.",
+      descriptionFr: "Bague au style Cartier classique en or 21 carats, un design iconique.",
+      sku: "FA-RNG-008", karat: "K21", weight: 6, goldPrice: 1300, profitMargin: 350,
+      calculatedPrice: 9750, stock: 6, isFeatured: false, isNew: true, certification: "شهادة أصالة معتمدة", categoryId: rings.id,
+    },
+    {
+      name: "قلادة قلب ذهبية عيار 21", nameFr: "Collier coeur en or 21 carats",
+      slug: "heart-necklace-21k", description: "قلادة بقلادة على شكل قلب من الذهب عيار 21. هدية مثالية للحب والأبد.",
+      descriptionFr: "Collier avec pendentif coeur en or 21 carats, cadeau d'amour parfait.",
+      sku: "FA-NCK-007", karat: "K21", weight: 5, goldPrice: 1300, profitMargin: 250,
+      calculatedPrice: 8000, stock: 10, isFeatured: false, isNew: false, certification: "شهادة أصالة معتمدة", categoryId: necklaces.id,
+    },
+    {
+      name: "أقراط حلقي ذهبي عيار 21", nameFr: "Boucles d'oreilles cerclées en or 21 carats",
+      slug: "hoop-earrings-21k", description: "أقراط حلقي كبيرة بتصميم عصري من الذهب عيار 21. تضيف جاذبية وثقة لأي إطلالة.",
+      descriptionFr: "Boucles d'oreilles cerclées grandes au design moderne en or 21 carats.",
+      sku: "FA-EAR-007", karat: "K21", weight: 6, goldPrice: 1300, profitMargin: 220,
+      calculatedPrice: 9000, stock: 9, isFeatured: false, isNew: true, certification: "شهادة أصالة معتمدة", categoryId: earrings.id,
+    },
+    {
+      name: "سوار كفية ذهبية عيار 21", nameFr: "Bracelet manchette en or 21 carats",
+      slug: "cuff-bracelet-21k", description: "سوار كفية عريض بتصميم جريء من الذهب عيار 21. قطعة م Statement تلفت الأنظار.",
+      descriptionFr: "Bracelet manchette large au design audacieux en or 21 carats.",
+      sku: "FA-BRC-006", karat: "K21", weight: 20, goldPrice: 1300, profitMargin: 400,
+      calculatedPrice: 32200, stock: 2, isFeatured: false, isNew: false, certification: "شهادة أصالة معتمدة", categoryId: bracelets.id,
+    },
+    {
+      name: "طقم لؤلؤ ذهبي عيار 21", nameFr: "Parure perles en or 21 carats",
+      slug: "pearl-set-21k", description: "طقم مجوهرات يجمع بين اللؤلؤ الطبيعي والذهب عيار 21. أناقة مطلقة للمناسبات.",
+      descriptionFr: "Parure alliant perles naturelles et or 21 carats pour une élégance absolue.",
+      sku: "FA-SET-003", karat: "K21", weight: 20, goldPrice: 1300, profitMargin: 350,
+      calculatedPrice: 32000, stock: 3, isFeatured: false, isNew: true, certification: "شهادة أصالة معتمدة", categoryId: sets.id,
+    },
+    {
+      name: "دبوس فينيتي ذهبي عيار 18", nameFr: "Broche infini en or 18 carats",
+      slug: "infinity-brooch-18k", description: "دبوس صدر بتصميم فينيتي أنيق من الذهب عيار 18. رمز للحب الأبدي والأناقة.",
+      descriptionFr: "Broche au design infini élégant en or 18 carats, symbole d'amour éternel.",
+      sku: "FA-SPC-003", karat: "K18", weight: 4, goldPrice: 1100, profitMargin: 300,
+      calculatedPrice: 5800, stock: 8, isFeatured: false, isNew: true, certification: "شهادة أصالة معتمدة", categoryId: special.id,
+    },
+    {
+      name: "خاتم أوبال ذهبي عيار 21", nameFr: "Bague opale en or 21 carats",
+      slug: "opal-ring-21k", description: "خاتم بأحجار أوبال طبيعية متلألئة من الذهب عيار 21. جمال الطبيعة في قطعة مجوهرات.",
+      descriptionFr: "Bague avec opales naturelles scintillantes en or 21 carats.",
+      sku: "FA-RNG-009", karat: "K21", weight: 5.5, goldPrice: 1300, profitMargin: 450,
+      calculatedPrice: 8900, stock: 4, isFeatured: false, isNew: false, certification: "شهادة أحجار كريمة", categoryId: rings.id,
+    },
   ];
 
   // Product images (diverse Unsplash jewelry images - 3-4 per product)
@@ -448,39 +499,82 @@ async function main() {
       "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800&q=80",
       "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80",
     ],
+    "cartier-style-ring-21k": [
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80",
+      "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=800&q=80",
+    ],
+    "heart-necklace-21k": [
+      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80",
+      "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800&q=80",
+    ],
+    "hoop-earrings-21k": [
+      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80",
+      "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80",
+      "https://images.unsplash.com/photo-1630019852942-f89202989a59?w=800&q=80",
+    ],
+    "cuff-bracelet-21k": [
+      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&q=80",
+      "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800&q=80",
+    ],
+    "pearl-set-21k": [
+      "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800&q=80",
+      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80",
+      "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=800&q=80",
+    ],
+    "infinity-brooch-18k": [
+      "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800&q=80",
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80",
+    ],
+    "opal-ring-21k": [
+      "https://images.unsplash.com/photo-1599459183200-59c3f861d2b3?w=800&q=80",
+      "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800&q=80",
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80",
+    ],
   };
 
   // Product videos (YouTube jewelry showcase videos)
   const productVideos: Record<string, { url: string; title: string }[]> = {
     "gold-wedding-ring-21k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "تصميم خاتم الزواج" },
+      { url: "https://www.youtube.com/embed/Upm6cKooP6Y", title: "تصميم خاتم الزواج الذهبي" },
     ],
     "diamond-ring-18k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "تفاصيل الألماس" },
+      { url: "https://www.youtube.com/embed/vkGdmJ8P9xg", title: "تفاصيل ألماس الخاتم" },
     ],
     "emerald-ring-21k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "سحر الزمرد" },
+      { url: "https://www.youtube.com/embed/8A2Gi6OMAuE", title: "سحر الزمرد والذهب" },
     ],
     "gold-necklace-18k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "عرض القلادة" },
+      { url: "https://www.youtube.com/embed/vkGdmJ8P9xg", title: "عرض القلادة الذهبية" },
     ],
     "diamond-necklace-18k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "بريق الألماس" },
+      { url: "https://www.youtube.com/embed/vkGdmJ8P9xg", title: "بريق قلادة الألماس" },
+    ],
+    "figaro-necklace-21k": [
+      { url: "https://www.youtube.com/embed/LcHNpRzssS0", title: "سلسلة فيغارو الذهبية" },
     ],
     "gold-bracelet-24k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "جودة الذهب 24" },
+      { url: "https://www.youtube.com/embed/8A2Gi6OMAuE", title: "جودة الذهب عيار 24" },
     ],
     "tennis-bracelet-21k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "سوار التينيس" },
+      { url: "https://www.youtube.com/embed/vkGdmJ8P9xg", title: "سوار التينيس الماسي" },
     ],
     "gold-set-21k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "عرض الطقم الكامل" },
+      { url: "https://www.youtube.com/embed/Upm6cKooP6Y", title: "عرض الطقم الكامل" },
     ],
     "diamond-set-18k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "طقم الألماس الفاخر" },
+      { url: "https://www.youtube.com/embed/vkGdmJ8P9xg", title: "طقم الألماس الفاخر" },
     ],
     "royal-necklace-21k": [
-      { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "العقد الملكي الأندلسي" },
+      { url: "https://www.youtube.com/embed/LcHNpRzssS0", title: "العقد الملكي الأندلسي" },
+    ],
+    "solitaire-ring-18k": [
+      { url: "https://www.youtube.com/embed/8A2Gi6OMAuE", title: "خاتم السوليتير الكلاسيكي" },
+    ],
+    "gold-earrings-21k": [
+      { url: "https://www.youtube.com/embed/Upm6cKooP6Y", title: "أقراط الذهب العصرية" },
+    ],
+    "drop-earrings-21k": [
+      { url: "https://www.youtube.com/embed/LcHNpRzssS0", title: "أقراط دوارة أنيقة" },
     ],
   };
 
