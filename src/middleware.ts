@@ -7,12 +7,12 @@ const handleI18nRouting = createMiddleware(routing);
 
 async function getAdminRole(request: NextRequest): Promise<string | null> {
   try {
-    const { jwtVerify } = await import("jose");
+    const { jwtDecrypt } = await import("jose");
     const cookie = request.cookies.get("__Secure-authjs.session-token")?.value
       || request.cookies.get("authjs.session-token")?.value;
     if (!cookie || !process.env.AUTH_SECRET) return null;
     const key = new TextEncoder().encode(process.env.AUTH_SECRET);
-    const { payload } = await jwtVerify(cookie, key, { algorithms: ["HS256"] });
+    const { payload } = await jwtDecrypt(cookie, key);
     return typeof (payload as any).role === "string" ? (payload as any).role : null;
   } catch {
     return null;
