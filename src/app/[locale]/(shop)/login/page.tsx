@@ -2,7 +2,7 @@
 
 import { useLocale } from "next-intl";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import {
@@ -25,6 +25,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({ email: "", phone: "", password: "" });
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (searchParams.get("registered") === "true") {
@@ -52,24 +53,18 @@ export default function LoginPage() {
       setLoading(false);
       return;
     }
-    const callbackUrl = L("/admin/dashboard");
-    const timeout = new Promise<"timeout">((r) => setTimeout(() => r("timeout"), 5000));
     try {
-      const result = await Promise.race([
-        signIn("credentials", { identifier, password: formData.password, redirect: false, callbackUrl }),
-        timeout,
-      ]);
-      if (result === "timeout") {
-        setError(locale === "ar" ? "انتهت مهلة الاتصال. يرجى المحاولة مرة أخرى" : "Connection timed out. Please try again");
-        setLoading(false);
-        return;
-      }
-      if (result?.error) {
-        setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
-        setLoading(false);
-        return;
-      }
-      window.location.href = result?.url || callbackUrl;
+      const csrfResp = await fetch("/api/auth/csrf");
+      const { csrfToken } = await csrfResp.json();
+      const csrfInput = document.getElementById("csrf-token") as HTMLInputElement;
+      if (csrfInput) csrfInput.value = csrfToken;
+      const identifierInput = document.getElementById("login-identifier") as HTMLInputElement;
+      if (identifierInput) identifierInput.value = identifier;
+      const passwordInput = document.getElementById("login-password") as HTMLInputElement;
+      if (passwordInput) passwordInput.value = formData.password;
+      const callbackInput = document.getElementById("login-callback") as HTMLInputElement;
+      if (callbackInput) callbackInput.value = L("/admin/dashboard");
+      formRef.current?.submit();
     } catch {
       setError(locale === "ar" ? "حدث خطأ غير متوقع" : "An unexpected error occurred");
       setLoading(false);
@@ -269,6 +264,13 @@ export default function LoginPage() {
           </Link>
         </motion.div>
       </div>
+
+      <form ref={formRef} method="POST" action="/api/auth/callback/credentials" className="hidden">
+        <input type="hidden" id="csrf-token" name="csrfToken" value="" />
+        <input type="hidden" id="login-identifier" name="identifier" value="" />
+        <input type="hidden" id="login-password" name="password" value="" />
+        <input type="hidden" id="login-callback" name="callbackUrl" value="" />
+      </form>
     </div>
   );
 }
