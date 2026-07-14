@@ -67,6 +67,32 @@
       "description": "Recevez les dernières offres et réductions",
       "placeholder": "Votre email",
       "subscribe": "S'abonner"
+    },
+    "testimonials": {
+      "title": "Ce que disent nos clients",
+      "subtitle": "Des expériences réelles de clients à travers tout le Maroc",
+      "reviews": [
+        { "name": "Fatima Zahra", "city": "Casablanca", "rating": 5, "text": "Le meilleur magasin de bijoux avec lequel j'ai jamais traité. La qualité est excellente et le service est formidable. Je recommande vivement." },
+        { "name": "Mohamed Alaoui", "city": "Rabat", "rating": 5, "text": "J'ai acheté la bague de mariage chez Filali Adib et l'expérience était parfaite. L'emballage est luxueux et le produit très élégant." },
+        { "name": "Sara Benomar", "city": "Fès", "rating": 5, "text": "Le collier en or 21 carats était plus beau que prévu. Merci pour le service excellent et la livraison rapide." },
+        { "name": "Abdallah Idrissi", "city": "Marrakech", "rating": 4, "text": "Des prix compétitifs par rapport au marché et des produits authentiques. Je rachèterai certainement ici." },
+        { "name": "Noura El Bouazizi", "city": "Tanger", "rating": 5, "text": "J'ai offert un ensemble de bijoux à ma mère qui était très satisfaite. L'emballage est excellent et la qualité est incomparable." },
+        { "name": "Youssef Tazi", "city": "Agadir", "rating": 5, "text": "Un service client excellent et toujours prêt à aider. Les produits arrivent rapidement et en toute sécurité." }
+      ]
+    },
+    "stats": {
+      "years": "Années d'Expérience",
+      "customers": "Clients Satisfaits",
+      "products": "Produits Vendus",
+      "rating": "Note des Clients"
+    },
+    "trust": {
+      "title": "Pourquoi Nous Choisir",
+      "subtitle": "Nous nous engageons aux plus hauts standards de qualité et de service pour votre entière satisfaction",
+      "authenticity": { "title": "Certificat d'Authenticité", "titleFr": "Certificat d'Authenticité", "description": "Tous nos produits sont certifiés authentiques" },
+      "shipping": { "title": "Livraison Gratuite", "titleFr": "Livraison Gratuite", "description": "Livraison gratuite pour les commandes de plus de 3000 MAD" },
+      "return": { "title": "Politique de Retour", "titleFr": "Retour Facile", "description": "Retour sous 30 jours" },
+      "support": { "title": "Support 24/7", "titleFr": "Support 24/7", "description": "Notre équipe de service client est toujours disponible" }
     }
   },
   "products": {

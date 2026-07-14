@@ -67,6 +67,32 @@
       "description": "Get the latest offers and discounts",
       "placeholder": "Your email",
       "subscribe": "Subscribe"
+    },
+    "testimonials": {
+      "title": "What Our Customers Say",
+      "subtitle": "Real experiences from customers across Morocco",
+      "reviews": [
+        { "name": "Fatima Zahra", "city": "Casablanca", "rating": 5, "text": "The best jewelry store I've dealt with. Quality is excellent and service is outstanding. Highly recommend." },
+        { "name": "Mohamed Alaoui", "city": "Rabat", "rating": 5, "text": "I bought my wedding ring from Filali Adib and the experience was perfect. Luxurious packaging and very elegant product." },
+        { "name": "Sara Benomar", "city": "Fès", "rating": 5, "text": "The 21-karat gold necklace was more beautiful than expected. Thank you for the excellent service and fast shipping." },
+        { "name": "Abdallah Idrissi", "city": "Marrakech", "rating": 4, "text": "Competitive prices compared to the market and authentic products. I will definitely buy here again." },
+        { "name": "Noura El Bouazizi", "city": "Tanger", "rating": 5, "text": "I gifted a jewelry set to my mother and she was very happy. Excellent packaging and incomparable quality." },
+        { "name": "Youssef Tazi", "city": "Agadir", "rating": 5, "text": "Excellent customer service always ready to help. Products arrive quickly and completely safe." }
+      ]
+    },
+    "stats": {
+      "years": "Years of Experience",
+      "customers": "Happy Customers",
+      "products": "Products Sold",
+      "rating": "Customer Rating"
+    },
+    "trust": {
+      "title": "Why Choose Us",
+      "subtitle": "We are committed to the highest standards of quality and service for your complete satisfaction",
+      "authenticity": { "title": "Certificate of Authenticity", "titleFr": "Certificat d'Authenticité", "description": "All our products are certified authentic" },
+      "shipping": { "title": "Free Shipping", "titleFr": "Livraison Gratuite", "description": "Free shipping on orders over 3000 MAD" },
+      "return": { "title": "Return Policy", "titleFr": "Retour Facile", "description": "Returns within 30 days" },
+      "support": { "title": "24/7 Support", "titleFr": "Support 24/7", "description": "Our customer service team is always available" }
     }
   },
   "products": {
