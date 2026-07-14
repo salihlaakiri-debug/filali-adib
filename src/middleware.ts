@@ -2,9 +2,22 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 const handleI18nRouting = createMiddleware(routing);
+
+async function getAdminRole(request: NextRequest): Promise<string | null> {
+  try {
+    const { jwtVerify } = await import("jose");
+    const cookie = request.cookies.get("__Secure-authjs.session-token")?.value
+      || request.cookies.get("authjs.session-token")?.value;
+    if (!cookie || !process.env.AUTH_SECRET) return null;
+    const key = new TextEncoder().encode(process.env.AUTH_SECRET);
+    const { payload } = await jwtVerify(cookie, key, { algorithms: ["HS256"] });
+    return typeof (payload as any).role === "string" ? (payload as any).role : null;
+  } catch {
+    return null;
+  }
+}
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -29,15 +42,12 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    const token = await getToken({
-      req: request,
-      secret: process.env.AUTH_SECRET,
-    });
+    const role = await getAdminRole(request);
 
-    if (!token || !["ADMIN", "SUPER_ADMIN"].includes(token.role as string)) {
+    if (!role || !["ADMIN", "SUPER_ADMIN"].includes(role)) {
       if (!pathname.startsWith("/api/")) {
         const locale = pathname.split("/")[1] || "ar";
-        if (!token) {
+        if (!role) {
           return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
         }
         return NextResponse.redirect(new URL(`/${locale}`, request.url));
