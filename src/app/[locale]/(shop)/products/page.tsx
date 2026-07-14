@@ -112,7 +112,7 @@ export default function ProductsPage() {
     { value: "24", label: "عيار 24" },
   ];
 
-  const hasFilters = selectedCategory !== "all" || selectedKarat !== "all";
+  const hasFilters = selectedCategory !== "all";
 
   return (
     <div className="bg-light min-h-screen">
@@ -199,33 +199,13 @@ export default function ProductsPage() {
                 </div>
               </div>
 
-              {/* Karat */}
-              <div className="mb-6">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{t("filters.karat")}</h4>
-                <div className="space-y-1">
-                  {karats.map((karat) => (
-                    <button
-                      key={karat.value}
-                      onClick={() => setSelectedKarat(karat.value)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${
-                        selectedKarat === karat.value
-                          ? "bg-gold/10 text-gold font-medium border border-gold/20"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-secondary"
-                      }`}
-                    >
-                      <span>{karat.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Clear all */}
-              {hasFilters && (
+              {selectedCategory !== "all" && (
                 <button
-                  onClick={() => { setSelectedCategory("all"); setSelectedKarat("all"); setShowFilters(false); }}
+                  onClick={() => { setSelectedCategory("all"); setShowFilters(false); }}
                   className="w-full py-2.5 border border-gold/30 text-gold text-sm rounded-xl hover:bg-gold/5 transition-all"
                 >
-                  مسح جميع الفلاتر
+                  {locale === "ar" ? "مسح الفلاتر" : "Clear filters"}
                 </button>
               )}
             </div>
@@ -254,14 +234,6 @@ export default function ProductsPage() {
                       <span className="bg-gold/10 text-gold text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
                         {categories.find(c => c.value === selectedCategory)?.label}
                         <button onClick={() => setSelectedCategory("all")} className="hover:text-gold-dark">
-                          <X size={12} />
-                        </button>
-                      </span>
-                    )}
-                    {selectedKarat !== "all" && (
-                      <span className="bg-gold/10 text-gold text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
-                        عيار {selectedKarat}
-                        <button onClick={() => setSelectedKarat("all")} className="hover:text-gold-dark">
                           <X size={12} />
                         </button>
                       </span>
