@@ -5,20 +5,6 @@ import type { NextRequest } from "next/server";
 
 const handleI18nRouting = createMiddleware(routing);
 
-async function getAdminRole(request: NextRequest): Promise<string | null> {
-  try {
-    const { jwtDecrypt } = await import("jose");
-    const cookie = request.cookies.get("__Secure-authjs.session-token")?.value
-      || request.cookies.get("authjs.session-token")?.value;
-    if (!cookie || !process.env.AUTH_SECRET) return null;
-    const key = new TextEncoder().encode(process.env.AUTH_SECRET);
-    const { payload } = await jwtDecrypt(cookie, key);
-    return typeof (payload as any).role === "string" ? (payload as any).role : null;
-  } catch {
-    return null;
-  }
-}
-
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const secretKey = request.nextUrl.searchParams.get("key");
@@ -42,17 +28,8 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    const role = await getAdminRole(request);
-
-    if (!role || !["ADMIN", "SUPER_ADMIN"].includes(role)) {
-      if (!pathname.startsWith("/api/")) {
-        const locale = pathname.split("/")[1] || "ar";
-        if (!role) {
-          return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
-        }
-        return NextResponse.redirect(new URL(`/${locale}`, request.url));
-      }
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.next();
     }
   }
 
