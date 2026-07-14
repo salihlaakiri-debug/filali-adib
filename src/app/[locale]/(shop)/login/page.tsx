@@ -43,38 +43,16 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-
-      const csrfRes = await fetch("/api/auth/csrf");
-      const { csrfToken } = await csrfRes.json();
-
-      const authRes = await fetch("/api/auth/callback/credentials", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          identifier,
-          password: formData.password,
-          csrfToken,
-          callbackUrl: "/",
-          redirect: "false",
-          json: "true",
-        }),
-        redirect: "manual",
+      const result = await signIn("credentials", {
+        identifier,
+        password: formData.password,
+        redirect: false,
       });
-
-      if (authRes.status === 401 || authRes.status === 403) {
+      if (result?.error) {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
         return;
       }
-
-      const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
-      const session = await sessionRes.json();
-      const role = session?.user?.role;
-
-      if (role === "ADMIN" || role === "SUPER_ADMIN") {
-        window.location.href = L("/admin/dashboard");
-      } else {
-        window.location.href = L("/");
-      }
+      window.location.href = "/";
     } catch {
       setError(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
     } finally {
