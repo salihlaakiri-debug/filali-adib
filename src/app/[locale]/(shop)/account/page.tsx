@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { User, Package, Heart, MapPin, LogOut, Loader2, ShoppingBag, Clock, CheckCircle2, Truck, Settings } from "lucide-react";
+import Link from "next/link";
+import { User, Package, Heart, MapPin, LogOut, Loader2, ShoppingBag, Clock, CheckCircle2, Truck, Settings, LayoutDashboard } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
@@ -140,6 +141,13 @@ export default function AccountPage() {
                   </button>
                 ))}
                 <div className="border-t border-gray-100 my-2" />
+                {["ADMIN", "SUPER_ADMIN"].includes((session?.user as any)?.role) && (
+                  <Link href={L("/admin/dashboard")}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gold/10 text-gold hover:bg-gold/20 transition-colors text-sm font-medium">
+                    <LayoutDashboard size={18} />
+                    <span>{locale === "ar" ? "لوحة التحكم" : "Admin Dashboard"}</span>
+                  </Link>
+                )}
                 <button onClick={() => signOut({ callbackUrl: L("/") })}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors text-sm">
                   <LogOut size={18} />
