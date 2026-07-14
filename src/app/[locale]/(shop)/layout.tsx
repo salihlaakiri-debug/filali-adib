@@ -13,7 +13,7 @@ export default function ShopLayout({
     <>
       <GoldPriceTicker />
       <Navbar />
-      <main className="flex-1 pt-[104px]">
+      <main className="flex-1 pt-20">
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
