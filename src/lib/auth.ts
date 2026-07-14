@@ -44,8 +44,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.identifier || !credentials?.password || !db) {
+        if (!credentials?.identifier || !credentials?.password) {
           return null;
+        }
+
+        if (!db) {
+          console.error("[AUTH] Database connection unavailable. Check DATABASE_URL.");
+          throw new Error("Database connection unavailable");
         }
 
         const identifier = (credentials.identifier as string).trim();

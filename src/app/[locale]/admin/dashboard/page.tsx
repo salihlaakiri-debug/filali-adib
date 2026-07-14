@@ -219,7 +219,7 @@ export default function DashboardPage() {
                   <span className="text-xs font-medium text-secondary">{s.count}</span>
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all" style={{ width: `${s.percentage}%`, backgroundColor: statusColors[s.status] || "#gray" }} />
+                  <div className="h-full rounded-full transition-all" style={{ width: `${s.percentage}%`, backgroundColor: statusColors[s.status] || "#9CA3AF" }} />
                 </div>
               </div>
             ))}

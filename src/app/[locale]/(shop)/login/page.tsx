@@ -30,8 +30,15 @@ export default function LoginPage() {
     if (searchParams.get("registered") === "true") {
       setSuccess(locale === "ar" ? "تم إنشاء الحساب بنجاح! سجل الدخول الآن" : "Account created! Please sign in");
     }
-    if (searchParams.get("error")) {
-      setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
+    const err = searchParams.get("error");
+    if (err) {
+      const errorMap: Record<string, string> = {
+        CredentialsSignin: locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials",
+        Configuration: locale === "ar" ? "خطأ في إعدادات الخادم. يرجى المحاولة لاحقاً" : "Server configuration error. Please try again later",
+        AccessDenied: locale === "ar" ? "تم رفض الوصول" : "Access denied",
+        SessionRequired: locale === "ar" ? "يرجى تسجيل الدخول أولاً" : "Please sign in first",
+      };
+      setError(errorMap[err] || (locale === "ar" ? "حدث خطأ. يرجى المحاولة مرة أخرى" : "An error occurred. Please try again"));
     }
   }, [searchParams, locale]);
 
@@ -45,11 +52,28 @@ export default function LoginPage() {
       setLoading(false);
       return;
     }
-    await signIn("credentials", {
-      identifier,
-      password: formData.password,
-      callbackUrl: L("/admin/dashboard"),
-    });
+    const callbackUrl = L("/admin/dashboard");
+    const timeout = new Promise<"timeout">((r) => setTimeout(() => r("timeout"), 5000));
+    try {
+      const result = await Promise.race([
+        signIn("credentials", { identifier, password: formData.password, redirect: false, callbackUrl }),
+        timeout,
+      ]);
+      if (result === "timeout") {
+        setError(locale === "ar" ? "انتهت مهلة الاتصال. يرجى المحاولة مرة أخرى" : "Connection timed out. Please try again");
+        setLoading(false);
+        return;
+      }
+      if (result?.error) {
+        setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
+        setLoading(false);
+        return;
+      }
+      window.location.href = result?.url || callbackUrl;
+    } catch {
+      setError(locale === "ar" ? "حدث خطأ غير متوقع" : "An unexpected error occurred");
+      setLoading(false);
+    }
   };
 
   const t = (ar: string, fr: string) => locale === "ar" ? ar : fr;

@@ -41,55 +41,58 @@ export async function GET(request: Request) {
       }),
 
       (async () => {
+        const raw = await db.$queryRaw<{ date: string; revenue: number; orders: number }[]>`
+          SELECT
+            TO_CHAR(o."createdAt"::date, 'YYYY-MM-DD') AS date,
+            COALESCE(SUM(o."total"), 0)::float AS revenue,
+            COUNT(o."id")::int AS orders
+          FROM "Order" o
+          WHERE o."status" != 'CANCELLED'
+            AND o."createdAt" >= ${startDate}
+          GROUP BY o."createdAt"::date
+          ORDER BY date ASC
+        `;
+        const map = new Map(raw.map((r) => [r.date, { date: r.date, revenue: Number(r.revenue), orders: r.orders }]));
         const results: { date: string; revenue: number; orders: number }[] = [];
         for (let i = days - 1; i >= 0; i--) {
-          const dayStart = new Date(now.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
-          const dayEnd = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-          const [dayRevenue, dayOrders] = await Promise.all([
-            db.order.aggregate({ _sum: { total: true }, where: { status: { not: "CANCELLED" }, createdAt: { gte: dayStart, lt: dayEnd } } }),
-            db.order.count({ where: { createdAt: { gte: dayStart, lt: dayEnd } } }),
-          ]);
-          results.push({
-            date: dayStart.toISOString().split("T")[0],
-            revenue: Number(dayRevenue._sum.total || 0),
-            orders: dayOrders,
-          });
+          const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+          const key = d.toISOString().split("T")[0];
+          results.push(map.get(key) || { date: key, revenue: 0, orders: 0 });
         }
         return results;
       })(),
 
-      (async () => {
-        const orders = await db.order.findMany({
-          where: { status: { not: "CANCELLED" }, createdAt: { gte: startDate } },
-          include: { items: { include: { product: true } } },
-        });
-        const sales: Record<string, { name: string; sales: number; revenue: number; image: string | null }> = {};
-        orders.forEach((o) => o.items.forEach((item) => {
-          const pid = item.productId;
-          if (!sales[pid]) sales[pid] = { name: item.product.name, sales: 0, revenue: 0, image: null };
-          sales[pid].sales += item.quantity;
-          sales[pid].revenue += Number(item.total);
-        }));
-        return Object.values(sales).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
-      })(),
+      db.$queryRaw<{ name: string; sales: number; revenue: number; image: string | null }[]>`
+        SELECT
+          p."name" AS name,
+          SUM(oi."quantity")::int AS sales,
+          SUM(oi."total")::float AS revenue,
+          (SELECT pi."url" FROM "ProductImage" pi WHERE pi."productId" = p."id" ORDER BY pi."order" LIMIT 1) AS image
+        FROM "OrderItem" oi
+        JOIN "Order" o ON oi."orderId" = o."id"
+        JOIN "Product" p ON oi."productId" = p."id"
+        WHERE o."status" != 'CANCELLED'
+          AND o."createdAt" >= ${startDate}
+        GROUP BY p."id", p."name"
+        ORDER BY revenue DESC
+        LIMIT 10
+      `,
 
-      (async () => {
-        const categories = await db.category.findMany({ select: { id: true, name: true } });
-        const categoryResults: { name: string; revenue: number; sales: number }[] = [];
-        for (const cat of categories) {
-          const catOrders = await db.orderItem.findMany({
-            where: {
-              product: { categoryId: cat.id },
-              order: { status: { not: "CANCELLED" }, createdAt: { gte: startDate } },
-            },
-            select: { quantity: true, total: true },
-          });
-          const revenue = catOrders.reduce((s, oi) => s + Number(oi.total), 0);
-          const sales = catOrders.reduce((s, oi) => s + oi.quantity, 0);
-          if (sales > 0) categoryResults.push({ name: cat.name, revenue, sales });
-        }
-        return categoryResults.sort((a, b) => b.revenue - a.revenue);
-      })(),
+      db.$queryRaw<{ name: string; revenue: number; sales: number }[]>`
+        SELECT
+          c."name" AS name,
+          SUM(oi."total")::float AS revenue,
+          SUM(oi."quantity")::int AS sales
+        FROM "OrderItem" oi
+        JOIN "Order" o ON oi."orderId" = o."id"
+        JOIN "Product" p ON oi."productId" = p."id"
+        JOIN "Category" c ON p."categoryId" = c."id"
+        WHERE o."status" != 'CANCELLED'
+          AND o."createdAt" >= ${startDate}
+        GROUP BY c."id", c."name"
+        HAVING SUM(oi."quantity") > 0
+        ORDER BY revenue DESC
+      `,
 
       db.order.findMany({
         take: 10,
