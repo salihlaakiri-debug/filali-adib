@@ -40,7 +40,7 @@ export function GoldPriceTicker() {
   const isUp = (price.change || 0) >= 0;
 
   return (
-    <div className="bg-secondary text-white text-sm relative overflow-hidden">
+    <div className="fixed top-0 left-0 right-0 z-[60] bg-secondary text-white text-sm relative overflow-hidden shadow-lg shadow-black/20">
       {/* Scrolling background pattern */}
       <div className="absolute inset-0 opacity-[0.03]">
         <div className="absolute inset-0" style={{
