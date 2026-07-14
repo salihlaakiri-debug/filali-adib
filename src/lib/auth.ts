@@ -25,7 +25,7 @@ declare module "next-auth" {
 const googleConfigured = !!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: db ? PrismaAdapter(db) : undefined,
+  adapter: googleConfigured && db ? PrismaAdapter(db) : undefined,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",

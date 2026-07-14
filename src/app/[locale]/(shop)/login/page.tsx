@@ -4,7 +4,7 @@ import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import {
   Eye, EyeOff, Loader2, ArrowLeft, Lock, Mail, Shield, Phone,
   Check, Sparkles,
@@ -52,9 +52,8 @@ export default function LoginPage() {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
         return;
       }
-      const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
-      const sessionData = await sessionRes.json();
-      const role = sessionData?.user?.role;
+      const session = await getSession();
+      const role = (session?.user as any)?.role;
       if (role === "ADMIN" || role === "SUPER_ADMIN") {
         window.location.href = L("/admin/dashboard");
       } else {
