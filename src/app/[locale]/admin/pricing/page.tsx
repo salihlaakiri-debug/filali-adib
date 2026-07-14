@@ -1,212 +1,163 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
-import { useState, useEffect } from "react";
-import { Save, Loader2, Calculator, Info } from "lucide-react";
-import { motion } from "framer-motion";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
+import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
+import { DollarSign, Save, Loader2, Calculator, TrendingUp } from "lucide-react";
+import { AdminLoading } from "@/components/admin";
 import { useToast } from "@/components/motion/Toast";
-
-interface GoldPrice { id: string; karat: string; price: number; }
-interface Margin { id: string; categoryId: string | null; margin: number; }
+import { motion } from "framer-motion";
 
 export default function AdminPricingPage() {
-  const t = useTranslations("admin.pricing");
   const locale = useLocale();
   const { addToast } = useToast();
-  const [goldPrice, setGoldPrice] = useState<{ id: string; price: number }>({ id: "", price: 1100 });
-  const [profitMargins, setProfitMargins] = useState<Record<string, { id: string; margin: number }>>({});
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [calcCategory, setCalcCategory] = useState("rings");
-  const [calcWeight, setCalcWeight] = useState(5);
-
-  const categoryNames: Record<string, string> = {
-    rings: locale === "ar" ? "خواتم" : "Bagues",
-    necklaces: locale === "ar" ? "سلاسل" : "Colliers",
-    earrings: locale === "ar" ? "أقراط" : "Boucles d'oreilles",
-    bracelets: locale === "ar" ? "أساور" : "Bracelets",
-    sets: locale === "ar" ? "أطقم" : "Parures",
-  };
+  const [saving, setSaving] = useState("");
+  const [goldPrice18k, setGoldPrice18k] = useState(1100);
+  const [margins, setMargins] = useState<{ id?: string; categoryId: string; categoryName: string; margin: number }[]>([]);
+  const [calcCategory, setCalcCategory] = useState(0);
+  const [calcWeight, setCalcWeight] = useState(10);
 
   useEffect(() => {
     fetch("/api/admin/pricing")
       .then((r) => r.json())
-      .then((data) => {
-        const k18 = (data.goldPrices || []).find((p: GoldPrice) => p.karat === "K18");
-        setGoldPrice(k18 ? { id: k18.id, price: k18.price } : { id: "", price: 1100 });
+      .then((d) => {
+        const k18 = d.goldPrices?.find((p: any) => p.karat === "K18");
+        if (k18) setGoldPrice18k(Number(k18.price));
 
-        const margins: Record<string, { id: string; margin: number }> = {};
-        (data.margins || []).forEach((m: Margin, i: number) => {
-          const cats = ["rings", "necklaces", "earrings", "bracelets", "sets"];
-          margins[cats[i] || `cat${i}`] = { id: m.id, margin: m.margin };
-        });
-        if (!margins.rings) margins.rings = { id: "", margin: 200 };
-        if (!margins.necklaces) margins.necklaces = { id: "", margin: 250 };
-        if (!margins.earrings) margins.earrings = { id: "", margin: 180 };
-        if (!margins.bracelets) margins.bracelets = { id: "", margin: 220 };
-        if (!margins.sets) margins.sets = { id: "", margin: 300 };
-        setProfitMargins(margins);
-      })
-      .catch(() => {
-        setGoldPrice({ id: "", price: 1100 });
-        setProfitMargins({ rings: { id: "", margin: 200 }, necklaces: { id: "", margin: 250 }, earrings: { id: "", margin: 180 }, bracelets: { id: "", margin: 220 }, sets: { id: "", margin: 300 } });
+        const cats = d.categories || [];
+        const existingMargins = d.margins || [];
+        setMargins(cats.map((c: any) => {
+          const existing = existingMargins.find((m: any) => m.categoryId === c.id);
+          return { id: existing?.id, categoryId: c.id, categoryName: c.name, margin: existing ? Number(existing.margin) : 200 };
+        }));
       })
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSave = async () => {
-    setSaving(true);
+  const saveGoldPrice = async () => {
+    setSaving("gold");
     try {
-      await fetch("/api/admin/pricing", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "goldPrice", karat: "K18", price: goldPrice.price }),
+      const res = await fetch("/api/admin/pricing", {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "goldPrice", karat: "K18", price: goldPrice18k }),
       });
-      addToast(locale === "ar" ? "تم حفظ السعر بنجاح" : "Price saved successfully");
-    } catch { addToast(locale === "ar" ? "حدث خطأ" : "Error occurred"); } finally { setSaving(false); }
+      if (!res.ok) throw new Error();
+      addToast(locale === "ar" ? "تم حفظ سعر الذهب" : "Gold price saved");
+    } catch { addToast(locale === "ar" ? "خطأ" : "Error"); }
+    setSaving("");
   };
 
-  const calcPrice = () => {
-    const margin = profitMargins[calcCategory]?.margin || 0;
-    return (goldPrice.price + margin) * calcWeight;
+  const saveMargins = async () => {
+    setSaving("margins");
+    try {
+      const res = await fetch("/api/admin/pricing", {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "margins", margins: margins.map((m) => ({ id: m.id, categoryId: m.categoryId, margin: m.margin })) }),
+      });
+      if (!res.ok) throw new Error();
+      addToast(locale === "ar" ? "تم حفظ هامش الربح" : "Margins saved");
+    } catch { addToast(locale === "ar" ? "خطأ" : "Error"); }
+    setSaving("");
   };
 
-  if (loading) {
-    return <div className="flex justify-center py-20"><Loader2 size={32} className="text-gold animate-spin" /></div>;
-  }
+  if (loading) return <AdminLoading />;
+
+  const calcPrice = margins[calcCategory]
+    ? (goldPrice18k + margins[calcCategory].margin) * calcWeight
+    : 0;
 
   return (
-    <div>
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">{t("title")}</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {locale === "ar" ? "عيار 18 فقط — هو العيار القانوني في المغرب" : "18K only — legal karat in Morocco"}
-          </p>
+    <div className="space-y-6 max-w-4xl">
+      <h1 className="text-xl font-bold text-secondary">{locale === "ar" ? "التسعير" : "Pricing"}</h1>
+
+      {/* Gold Price */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
+            <DollarSign size={20} className="text-gold" />
+          </div>
+          <div>
+            <h2 className="font-semibold text-secondary">{locale === "ar" ? "سعر الذهب" : "Gold Price"}</h2>
+            <p className="text-xs text-gray-400">K18 · {locale === "ar" ? "درهم مغربي" : "Moroccan Dirham"}</p>
+          </div>
         </div>
-        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleSave} disabled={saving}
-          className="bg-gold text-secondary px-5 py-2.5 rounded-lg font-medium hover:bg-gold-dark transition-colors flex items-center gap-2 shadow-lg shadow-gold/20 disabled:opacity-50">
-          {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-          {locale === "ar" ? "حفظ التغييرات" : "Save"}
-        </motion.button>
-      </motion.div>
-
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Gold Price */}
-        <FadeIn direction="right">
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-50">
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-              <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
-                <span className="text-gold font-bold text-sm">18K</span>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800">{t("goldPrice")}</h2>
-                <p className="text-xs text-gray-500">
-                  {locale === "ar" ? "العيار الوحيد القانوني في المغرب" : "The only legal karat in Morocco"}
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 bg-gold/5 rounded-xl mb-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-800">
-                    {locale === "ar" ? "عيار 18 (750/1000)" : "Carat 18 (750/1000)"}
-                  </p>
-                  <p className="text-sm text-gray-500">{locale === "ar" ? "سعر الغرام الواحد" : "Prix par gramme"}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input type="number" value={goldPrice.price}
-                    onChange={(e) => setGoldPrice({ ...goldPrice, price: Number(e.target.value) })}
-                    className="w-36 px-4 py-3 border border-gray-200 rounded-xl text-right focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all text-lg font-bold" />
-                  <span className="text-gray-500 font-medium">د.م/غ</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 bg-blue-50 rounded-xl flex items-start gap-2">
-              <Info size={16} className="text-blue-500 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-blue-700">
-                {locale === "ar"
-                  ? "في المغرب، عيار 18 هو العيار القانوني الوحيد المسموح به للبيع. يعادل 75% ذهب نقدي (750/1000)."
-                  : "Au Maroc, le carat 18 est le seul karat légalement vendu. Il équivaut à 75% d'or pur (750/1000)."}
-              </p>
-            </div>
+        <div className="flex items-end gap-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-600 mb-1">{locale === "ar" ? "السعر لكل غرام (د.م)" : "Price per gram (MAD)"}</label>
+            <input type="number" value={goldPrice18k} onChange={(e) => setGoldPrice18k(parseFloat(e.target.value) || 0)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-lg font-bold focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20" />
           </div>
-        </FadeIn>
-
-        {/* Profit Margins */}
-        <FadeIn direction="left" delay={0.1}>
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-50">
-            <h2 className="text-lg font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-100">{t("profitMargin")}</h2>
-            <StaggerContainer className="space-y-3" staggerDelay={0.08}>
-              {Object.entries(profitMargins).map(([category, data]) => (
-                <StaggerItem key={category}>
-                  <motion.div whileHover={{ x: 4 }} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl transition-all">
-                    <div>
-                      <p className="font-medium text-gray-800">{categoryNames[category] || category}</p>
-                      <p className="text-sm text-gray-500">{locale === "ar" ? "هامش الربح لكل غرام" : "Marge par gramme"}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input type="number" value={data.margin}
-                        onChange={(e) => setProfitMargins({ ...profitMargins, [category]: { ...data, margin: Number(e.target.value) } })}
-                        className="w-32 px-4 py-2 border border-gray-200 rounded-xl text-right focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-                      <span className="text-gray-500 text-sm">د.م/غ</span>
-                    </div>
-                  </motion.div>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-          </div>
-        </FadeIn>
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={saveGoldPrice} disabled={saving === "gold"}
+            className="flex items-center gap-2 bg-gold text-secondary px-6 py-3 rounded-xl font-medium text-sm hover:bg-gold-dark transition-colors disabled:opacity-50 shadow-sm">
+            {saving === "gold" ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            {locale === "ar" ? "حفظ" : "Save"}
+          </motion.button>
+        </div>
       </div>
 
-      {/* Calculator */}
-      <FadeIn direction="up" delay={0.2}>
-        <div className="mt-8 bg-white rounded-2xl shadow-sm p-6 border border-gray-50">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+      {/* Profit Margins */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
-              <Calculator size={20} className="text-gold" />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-800">
-              {locale === "ar" ? "حاسبة الأسعار" : "Calculateur de prix"}
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <label className="block text-sm text-gray-600 mb-2">{locale === "ar" ? "الفئة" : "Catégorie"}</label>
-              <select value={calcCategory} onChange={(e) => setCalcCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-gray-50 focus:bg-white">
-                {Object.entries(categoryNames).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-              </select>
+              <TrendingUp size={20} className="text-gold" />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-2">{locale === "ar" ? "الوزن (غ)" : "Poids (g)"}</label>
-              <input type="number" value={calcWeight} onChange={(e) => setCalcWeight(Number(e.target.value))}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-gray-50 focus:bg-white" />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-600 mb-2">{locale === "ar" ? "السعر النهائي" : "Prix final"}</label>
-              <div className="w-full px-4 py-3 bg-gold/10 rounded-xl font-bold text-gold text-xl text-center">
-                {calcPrice().toLocaleString()} د.م
-              </div>
+              <h2 className="font-semibold text-secondary">{locale === "ar" ? "هامش الربح حسب التصنيف" : "Profit Margins by Category"}</h2>
+              <p className="text-xs text-gray-400">{locale === "ar" ? "د.م لكل غرام" : "MAD per gram"}</p>
             </div>
           </div>
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={saveMargins} disabled={saving === "margins"}
+            className="flex items-center gap-2 bg-gold text-secondary px-6 py-2.5 rounded-xl font-medium text-sm hover:bg-gold-dark transition-colors disabled:opacity-50 shadow-sm">
+            {saving === "margins" ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            {locale === "ar" ? "حفظ الهوامش" : "Save Margins"}
+          </motion.button>
+        </div>
+        <div className="space-y-3">
+          {margins.map((m, i) => (
+            <div key={m.categoryId} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+              <span className="text-sm font-medium text-secondary min-w-[120px]">{m.categoryName}</span>
+              <input type="number" value={m.margin}
+                onChange={(e) => setMargins((prev) => prev.map((p, idx) => idx === i ? { ...p, margin: parseFloat(e.target.value) || 0 } : p))}
+                className="w-32 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gold text-center font-medium" />
+              <span className="text-xs text-gray-500">د.م/غ</span>
+              <div className="flex-1" />
+              <span className="text-sm text-gray-500">
+                {locale === "ar" ? "السعر:" : "Price:"} <span className="font-medium text-secondary">{(goldPrice18k + m.margin).toLocaleString()} د.م/غ</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
 
-          <div className="p-4 bg-gray-50 rounded-xl">
-            <p className="text-sm text-gray-600">
-              <strong>{locale === "ar" ? "المعادلة:" : "Formule:"}</strong>{" "}
-              {locale === "ar" ? "السعر النهائي = (سعر الذهب + هامش الربح) × الوزن" : "Prix final = (Prix or + Marge) × Poids"}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              ({goldPrice.price.toLocaleString()} + {profitMargins[calcCategory]?.margin?.toLocaleString()}) × {calcWeight} = {calcPrice().toLocaleString()} د.م
-            </p>
+      {/* Price Calculator */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
+            <Calculator size={20} className="text-gold" />
+          </div>
+          <h2 className="font-semibold text-secondary">{locale === "ar" ? "حاسبة الأسعار" : "Price Calculator"}</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">{locale === "ar" ? "التصنيف" : "Category"}</label>
+            <select value={calcCategory} onChange={(e) => setCalcCategory(parseInt(e.target.value))}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gold">
+              {margins.map((m, i) => <option key={m.categoryId} value={i}>{m.categoryName}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">{locale === "ar" ? "الوزن (غ)" : "Weight (g)"}</label>
+            <input type="number" value={calcWeight} onChange={(e) => setCalcWeight(parseFloat(e.target.value) || 0)}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gold" />
           </div>
         </div>
-      </FadeIn>
+        <div className="p-4 bg-gold/5 rounded-xl">
+          <p className="text-sm text-gray-500 mb-1">{locale === "ar" ? "الصيغة" : "Formula"}</p>
+          <p className="text-sm font-mono text-secondary mb-2">({goldPrice18k} + {margins[calcCategory]?.margin || 0}) × {calcWeight}g</p>
+          <p className="text-2xl font-bold text-gold">{calcPrice.toLocaleString()} د.م</p>
+        </div>
+      </div>
     </div>
   );
 }

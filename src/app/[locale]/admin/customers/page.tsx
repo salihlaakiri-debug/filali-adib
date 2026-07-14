@@ -1,87 +1,90 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { FadeIn } from "@/components/motion";
+import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
+import { Users, Mail, Phone, Calendar, ShoppingCart, DollarSign } from "lucide-react";
+import { AdminSearch, AdminPagination, AdminLoading } from "@/components/admin";
+import { useToast } from "@/components/motion/Toast";
 
 interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  orderCount: number;
-  totalSpent: number;
-  createdAt: string;
+  id: string; name: string; email: string; phone: string | null; createdAt: string;
+  orderCount: number; totalSpent: number;
 }
+interface Pagination { page: number; limit: number; total: number; totalPages: number }
 
 export default function AdminCustomersPage() {
+  const locale = useLocale();
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 15, total: 0, totalPages: 0 });
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("/api/admin/customers")
+  const fetchCustomers = (page = 1, searchVal = search) => {
+    setLoading(true);
+    const params = new URLSearchParams({ page: String(page), limit: "15" });
+    if (searchVal) params.set("search", searchVal);
+    fetch(`/api/admin/customers?${params}`)
       .then((r) => r.json())
-      .then((data) => setCustomers(data.customers || []))
-      .catch(() => setCustomers([]))
+      .then((d) => { setCustomers(d.customers || []); setPagination(d.pagination || { page: 1, limit: 15, total: 0, totalPages: 0 }); })
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { fetchCustomers(); }, []);
 
   return (
-    <div>
-      <motion.h1 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-        className="text-2xl font-bold text-gray-800 mb-8">العملاء</motion.h1>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-xl font-bold text-secondary">{locale === "ar" ? "العملاء" : "Customers"}</h1>
+        <p className="text-sm text-gray-500">{pagination.total} {locale === "ar" ? "عميل" : "customers"}</p>
+      </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
-            <Loader2 size={32} className="text-gold" />
-          </motion.div>
+      <AdminSearch value={search} onChange={(v) => { setSearch(v); fetchCustomers(1, v); }}
+        placeholder={locale === "ar" ? "بحث بالاسم أو البريد أو الهاتف..." : "Search by name, email, or phone..."} className="w-full sm:w-72" />
+
+      {loading ? <AdminLoading /> : customers.length === 0 ? (
+        <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-50">
+          <Users size={40} className="text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-500">{locale === "ar" ? "لا يوجد عملاء" : "No customers"}</p>
         </div>
       ) : (
-        <FadeIn direction="up">
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left text-sm text-gray-500 bg-gray-50">
-                    {["العميل", "الهاتف", "الطلبات", "إجمالي المشتريات", "تاريخ الانضمام"].map((h) => (
-                      <th key={h} className="px-6 py-4 font-medium">{h}</th>
-                    ))}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-50 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/50">
+                  {(locale === "ar" ? ["العميل", "الهاتف", "الطلبات", "المجموع", "تاريخ التسجيل"] : ["Customer", "Phone", "Orders", "Total Spent", "Joined"]).map((h) => (
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {customers.map((c) => (
+                  <tr key={c.id} className="hover:bg-gray-50/80 transition-colors">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-gold/10 rounded-full flex items-center justify-center text-xs font-bold text-gold flex-shrink-0">
+                          {c.name?.charAt(0) || c.email?.charAt(0) || "?"}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-secondary truncate">{c.name || "—"}</p>
+                          <p className="text-xs text-gray-400 truncate">{c.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5 text-sm text-gray-500" dir="ltr">{c.phone || "—"}</td>
+                    <td className="px-5 py-3.5 text-sm font-medium">{c.orderCount}</td>
+                    <td className="px-5 py-3.5 text-sm font-medium">{c.totalSpent.toLocaleString()} د.م</td>
+                    <td className="px-5 py-3.5 text-sm text-gray-500">{new Date(c.createdAt).toLocaleDateString(locale === "ar" ? "ar-MA" : "fr-FR")}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {customers.length === 0 ? (
-                    <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-400">لا يوجد عملاء بعد</td></tr>
-                  ) : (
-                    customers.map((customer, i) => (
-                      <motion.tr key={customer.id}
-                        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.05 * i }}
-                        className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center">
-                              <span className="text-gold font-bold text-sm">{customer.name?.charAt(0) || "?"}</span>
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-800">{customer.name}</p>
-                              <p className="text-xs text-gray-500">{customer.email}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-gray-600 text-sm">{customer.phone || "—"}</td>
-                        <td className="px-6 py-4 text-gray-800 font-medium">{customer.orderCount}</td>
-                        <td className="px-6 py-4 text-gray-800 font-medium">{customer.totalSpent.toLocaleString()} د.م</td>
-                        <td className="px-6 py-4 text-gray-600 text-sm">{new Date(customer.createdAt).toLocaleDateString("ar-MA")}</td>
-                      </motion.tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </FadeIn>
+          <div className="px-5 pb-4">
+            <AdminPagination page={pagination.page} totalPages={pagination.totalPages}
+              onPageChange={(p) => fetchCustomers(p)} totalItems={pagination.total} pageSize={pagination.limit} />
+          </div>
+        </div>
       )}
     </div>
   );

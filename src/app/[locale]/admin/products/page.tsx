@@ -1,116 +1,160 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations, useLocale } from "next-intl";
-import { Plus, Edit2, Trash2, Loader2 } from "lucide-react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
-import { DiamondIcon } from "@/components/icons";
+import { useEffect, useState } from "react";
+import { Plus, Edit2, Trash2, Eye, EyeOff, Package, AlertTriangle } from "lucide-react";
+import { AdminTable, AdminSearch, AdminPagination, AdminBadge, AdminFilterTabs, AdminConfirmDialog, AdminLoading } from "@/components/admin";
+import { useToast } from "@/components/motion/Toast";
 import { motion } from "framer-motion";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
 
 interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  karat: string;
-  weight: number;
-  calculatedPrice: number;
-  stock: number;
-  isActive: boolean;
-}
+  id: string; name: string; slug: string; sku: string; karat: string; weight: number;
+  calculatedPrice: number; stock: number; isActive: boolean; isFeatured: boolean;
+  images: { url: string }[]; category: { name: string } | null;
+  _count: { orderItems: number } };
+interface Pagination { page: number; limit: number; total: number; totalPages: number }
 
 export default function AdminProductsPage() {
-  const t = useTranslations("admin.products");
   const locale = useLocale();
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
+  const { addToast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 15, total: 0, totalPages: 0 });
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
 
-  useEffect(() => {
-    fetch("/api/admin/products")
+  const fetchProducts = (page = 1, searchVal = search, filterVal = filter) => {
+    setLoading(true);
+    const params = new URLSearchParams({ page: String(page), limit: "15" });
+    if (searchVal) params.set("search", searchVal);
+    if (filterVal === "active") params.set("status", "active");
+    if (filterVal === "inactive") params.set("status", "inactive");
+    if (filterVal === "lowStock") params.set("status", "lowStock");
+    fetch(`/api/admin/products?${params}`)
       .then((r) => r.json())
-      .then((data) => setProducts(data.products || []))
-      .catch(() => setProducts([]))
+      .then((d) => { setProducts(d.products || []); setPagination(d.pagination || { page: 1, limit: 15, total: 0, totalPages: 0 }); })
+      .catch(() => addToast(locale === "ar" ? "خطأ في التحميل" : "Error loading"))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { fetchProducts(); fetch("/api/categories").then(r => r.json()).then(d => setCategories(d.categories || d || [])).catch(() => {}); }, []);
+
+  const handleSearch = (val: string) => { setSearch(val); fetchProducts(1, val, filter); };
+  const handleFilter = (val: string) => { setFilter(val); fetchProducts(1, search, val); };
+
+  const handleToggleActive = async (id: string, current: boolean) => {
+    try {
+      const res = await fetch("/api/admin/products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, isActive: !current }) });
+      if (!res.ok) throw new Error();
+      setProducts((prev) => prev.map((p) => p.id === id ? { ...p, isActive: !current } : p));
+      addToast(locale === "ar" ? "تم التحديث" : "Updated");
+    } catch { addToast(locale === "ar" ? "خطأ" : "Error"); }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const res = await fetch(`/api/admin/products?id=${deleteId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setProducts((prev) => prev.filter((p) => p.id !== deleteId));
+      setPagination((prev) => ({ ...prev, total: prev.total - 1 }));
+      addToast(locale === "ar" ? "تم الحذف" : "Deleted");
+    } catch { addToast(locale === "ar" ? "خطأ في الحذف" : "Error deleting"); }
+    setDeleteId(null);
+  };
+
+  const columns = [
+    {
+      key: "product", label: locale === "ar" ? "المنتج" : "Product", className: "min-w-[250px]",
+      render: (p: Product) => (
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+            {p.images?.[0]?.url ? <img src={p.images[0].url} alt="" className="w-full h-full object-cover" /> : <Package size={18} className="text-gray-300 m-auto mt-3" />}
+          </div>
+          <div className="min-w-0">
+            <p className="font-medium text-secondary truncate">{p.name}</p>
+            <p className="text-xs text-gray-400">{p.sku} · {p.category?.name || "—"}</p>
+          </div>
+        </div>
+      ),
+    },
+    { key: "karat", label: locale === "ar" ? "العيار" : "Karat", render: (p: Product) => <span className="font-medium">{p.karat}</span> },
+    { key: "weight", label: locale === "ar" ? "الوزن" : "Weight", render: (p: Product) => `${p.weight}g` },
+    { key: "price", label: locale === "ar" ? "السعر" : "Price", render: (p: Product) => <span className="font-medium">{p.calculatedPrice?.toLocaleString()} د.م</span> },
+    { key: "stock", label: locale === "ar" ? "المخزون" : "Stock", render: (p: Product) => (
+      <span className={`font-medium ${p.stock <= 5 ? "text-red-500" : ""}`}>
+        {p.stock} {p.stock <= 5 && <AlertTriangle size={12} className="inline" />}
+      </span>
+    )},
+    { key: "status", label: locale === "ar" ? "الحالة" : "Status", render: (p: Product) => (
+      <div className="flex items-center gap-2">
+        <AdminBadge status={p.isActive ? "ACTIVE" : "INACTIVE"} label={p.isActive ? (locale === "ar" ? "نشط" : "Active") : (locale === "ar" ? "معطل" : "Inactive")} />
+        {p.isFeatured && <span className="text-[10px] text-gold">★</span>}
+      </div>
+    )},
+    { key: "actions", label: locale === "ar" ? "إجراءات" : "Actions", className: "text-end",
+      render: (p: Product) => (
+        <div className="flex items-center justify-end gap-1">
+          <button onClick={(e) => { e.stopPropagation(); handleToggleActive(p.id, p.isActive); }}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title={p.isActive ? "Deactivate" : "Activate"}>
+            {p.isActive ? <Eye size={15} className="text-green-500" /> : <EyeOff size={15} className="text-gray-400" />}
+          </button>
+          <Link href={L(`/admin/products/${p.id}`)} onClick={(e) => e.stopPropagation()}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Edit">
+            <Edit2 size={15} className="text-blue-500" />
+          </Link>
+          <button onClick={(e) => { e.stopPropagation(); setDeleteId(p.id); }}
+            className="p-2 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+            <Trash2 size={15} className="text-red-400" />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div>
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">{t("title")}</h1>
-        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-          <Link href={L("/admin/products/new")}
-            className="bg-gold text-secondary px-4 py-2 rounded-lg font-medium hover:bg-gold-dark transition-colors flex items-center gap-2 shadow-lg shadow-gold/20">
-            <Plus size={18} /> {t("add")}
-          </Link>
-        </motion.div>
-      </motion.div>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
-            <Loader2 size={32} className="text-gold" />
-          </motion.div>
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-secondary">{locale === "ar" ? "المنتجات" : "Products"}</h1>
+          <p className="text-sm text-gray-500">{pagination.total} {locale === "ar" ? "منتج" : "products"}</p>
         </div>
-      ) : (
-        <FadeIn direction="up">
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left text-sm text-gray-500 bg-gray-50">
-                    {["المنتج", "SKU", "العيار", "الوزن", "السعر", "المخزون", "الحالة", "الإجراءات"].map((h) => (
-                      <th key={h} className="px-6 py-4 font-medium">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.length === 0 ? (
-                    <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">لا توجد منتجات</td></tr>
-                  ) : (
-                    products.map((product, i) => (
-                      <motion.tr key={product.id}
-                        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 + i * 0.06 }}
-                        className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                              <DiamondIcon size={20} className="text-gold/60" />
-                            </div>
-                            <span className="font-medium text-gray-800">{product.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-gray-600 text-sm font-mono">{product.sku}</td>
-                        <td className="px-6 py-4 text-gray-600">{product.karat}</td>
-                        <td className="px-6 py-4 text-gray-600">{product.weight}g</td>
-                        <td className="px-6 py-4 font-medium text-gray-800">{product.calculatedPrice.toLocaleString()} د.م</td>
-                        <td className="px-6 py-4 text-gray-600">{product.stock}</td>
-                        <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${product.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                            {product.isActive ? "نشط" : "غير نشط"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} className="p-2 text-gray-400 hover:text-gold transition-colors">
-                              <Edit2 size={18} />
-                            </motion.button>
-                            <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                              <Trash2 size={18} />
-                            </motion.button>
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </FadeIn>
+        <Link href={L("/admin/products/new")}
+          className="flex items-center gap-2 bg-gold text-secondary px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-gold-dark transition-colors shadow-sm">
+          <Plus size={16} /> {locale === "ar" ? "إضافة منتج" : "Add Product"}
+        </Link>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <AdminSearch value={search} onChange={handleSearch} placeholder={locale === "ar" ? "بحث بالاسم أو SKU..." : "Search by name or SKU..."} className="w-full sm:w-72" />
+        <AdminFilterTabs
+          tabs={[
+            { key: "all", label: locale === "ar" ? "الكل" : "All" },
+            { key: "active", label: locale === "ar" ? "نشط" : "Active" },
+            { key: "inactive", label: locale === "ar" ? "معطل" : "Inactive" },
+            { key: "lowStock", label: locale === "ar" ? "مخزون منخفض" : "Low Stock" },
+          ]}
+          active={filter} onChange={handleFilter}
+        />
+      </div>
+
+      {loading ? <AdminLoading /> : (
+        <>
+          <AdminTable columns={columns} data={products} keyExtractor={(p) => p.id}
+            emptyMessage={locale === "ar" ? "لا توجد منتجات" : "No products found"} />
+          <AdminPagination page={pagination.page} totalPages={pagination.totalPages}
+            onPageChange={(p) => fetchProducts(p)} totalItems={pagination.total} pageSize={pagination.limit} />
+        </>
       )}
+
+      <AdminConfirmDialog open={!!deleteId} title={locale === "ar" ? "حذف المنتج" : "Delete Product"}
+        message={locale === "ar" ? "هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع." : "Are you sure? This cannot be undone."}
+        danger confirmLabel={locale === "ar" ? "حذف" : "Delete"} cancelLabel={locale === "ar" ? "إلغاء" : "Cancel"}
+        onConfirm={handleDelete} onCancel={() => setDeleteId(null)} />
     </div>
   );
 }
