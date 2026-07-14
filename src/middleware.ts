@@ -18,7 +18,10 @@ export async function middleware(request: NextRequest) {
     if (!token || !["ADMIN", "SUPER_ADMIN"].includes(token.role as string)) {
       if (!pathname.startsWith("/api/")) {
         const locale = pathname.split("/")[1] || "ar";
-        return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+        if (!token) {
+          return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+        }
+        return NextResponse.redirect(new URL(`/${locale}`, request.url));
       }
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

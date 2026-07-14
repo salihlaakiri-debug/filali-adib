@@ -52,13 +52,7 @@ export default function LoginPage() {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
         return;
       }
-      const session = await fetch("/api/auth/session").then(r => r.json()).catch(() => null);
-      const role = session?.user?.role;
-      if (role === "ADMIN" || role === "SUPER_ADMIN") {
-        window.location.href = L("/admin/dashboard");
-      } else {
-        window.location.href = L("/");
-      }
+      window.location.href = L("/admin/dashboard");
     } catch {
       setError(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
     } finally {
