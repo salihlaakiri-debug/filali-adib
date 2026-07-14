@@ -37,7 +37,7 @@ export default function DashboardPage() {
     fetch(`/api/admin/analytics?days=${days}`)
       .then((r) => r.json())
       .then(setData)
-      .catch(() => {})
+      .catch(() => console.warn("Failed to fetch dashboard data"))
       .finally(() => setLoading(false));
   }, [days]);
 

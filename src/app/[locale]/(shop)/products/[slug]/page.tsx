@@ -83,7 +83,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           fetch(`/api/reviews?productId=${p.id}`)
             .then((r) => r.json())
             .then((d) => { setReviews(d.reviews || []); setReviewStats({ total: d.total, average: d.average }); })
-            .catch(() => {});
+            .catch(() => console.warn("Failed to fetch product data"));
         }
       })
       .finally(() => setLoading(false));

@@ -30,7 +30,7 @@ export function GoldPriceTicker() {
           changePercent: data.changePercent || 0,
         });
       })
-      .catch(() => {})
+      .catch(() => console.warn("Failed to fetch gold price"))
       .finally(() => setLoading(false));
   }, []);
 

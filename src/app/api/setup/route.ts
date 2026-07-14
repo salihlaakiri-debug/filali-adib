@@ -27,7 +27,7 @@ async function seed() {
 
   const admin = await db.user.create({
     data: {
-      email: "admin@filaliadib.com",
+      email: "admin@filali-adib.ma",
       name: "عديب فيليالي",
       password: adminPassword,
       phone: "+212600000000",

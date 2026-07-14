@@ -36,7 +36,7 @@ export function FeaturedProducts() {
     fetch("/api/products?limit=4&sort=newest")
       .then((r) => r.json())
       .then((data) => setProducts(data.products || []))
-      .catch(() => {});
+      .catch(() => console.warn("Failed to fetch featured products"));
   }, []);
 
   const handleAddToCart = (product: Product) => {

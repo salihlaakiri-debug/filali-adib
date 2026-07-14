@@ -36,7 +36,7 @@ export default function AdminAnalyticsPage() {
     fetch(`/api/admin/analytics?days=${days}`)
       .then((r) => r.json())
       .then(setData)
-      .catch(() => {})
+      .catch(() => console.warn("Failed to fetch analytics"))
       .finally(() => setLoading(false));
   }, [days]);
 

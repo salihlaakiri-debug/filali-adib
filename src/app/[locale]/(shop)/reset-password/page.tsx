@@ -23,6 +23,8 @@ export default function ResetPasswordPage() {
   const userId = searchParams.get("userId");
 
   const t = (ar: string, fr: string) => locale === "ar" ? ar : fr;
+  const successTitle = locale === "ar" ? "تم إعادة التعيين!" : "Password Reset!";
+  const successMessage = locale === "ar" ? "تم تغيير كلمة المرور بنجاح. جاري التحويل..." : "Password changed successfully. Redirecting...";
 
   if (!token || !userId) {
     return (
@@ -120,8 +122,8 @@ export default function ResetPasswordPage() {
                 className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle size={40} className="text-green-500" />
               </motion.div>
-              <h3 className="font-semibold text-secondary text-lg mb-2">{t("تم إعادة التعيين!", "Password Reset!"})}</h3>
-              <p className="text-gray-500 text-sm mb-6">{t("تم تغيير كلمة المرور بنجاح. جاري التحويل...", "Password changed successfully. Redirecting...")}</p>
+              <h3 className="font-semibold text-secondary text-lg mb-2">{successTitle}</h3>
+              <p className="text-gray-500 text-sm mb-6">{successMessage}</p>
             </motion.div>
           ) : (
             <>

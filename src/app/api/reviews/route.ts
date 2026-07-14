@@ -19,7 +19,8 @@ export async function GET(request: Request) {
     const average = total > 0 ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / total : 0;
 
     return NextResponse.json({ reviews, total, average: Math.round(average * 10) / 10 });
-  } catch {
+  } catch (e) {
+    console.error("Error fetching reviews:", e);
     return NextResponse.json({ reviews: [], total: 0, average: 0 });
   }
 }
@@ -44,7 +45,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ review });
-  } catch {
+  } catch (e) {
+    console.error("Error creating review:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

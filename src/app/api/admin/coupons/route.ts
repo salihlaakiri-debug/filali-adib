@@ -11,7 +11,8 @@ export async function GET() {
     }
     const coupons = await db.coupon.findMany({ orderBy: { createdAt: "desc" } });
     return NextResponse.json({ coupons });
-  } catch {
+  } catch (e) {
+    console.error("Error fetching coupons:", e);
     return NextResponse.json({ coupons: [] });
   }
 }
@@ -43,7 +44,8 @@ export async function POST(request: Request) {
       },
     });
     return NextResponse.json({ coupon }, { status: 201 });
-  } catch {
+  } catch (e) {
+    console.error("Error creating coupon:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
@@ -65,7 +67,8 @@ export async function PUT(request: Request) {
 
     const coupon = await db.coupon.update({ where: { id }, data });
     return NextResponse.json({ coupon });
-  } catch {
+  } catch (e) {
+    console.error("Error updating coupon:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
@@ -82,7 +85,8 @@ export async function DELETE(request: Request) {
     if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
     await db.coupon.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (e) {
+    console.error("Error deleting coupon:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

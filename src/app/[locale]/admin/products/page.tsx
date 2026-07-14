@@ -52,7 +52,7 @@ export default function AdminProductsPage() {
       .finally(() => setLoading(false));
   }, [search, filter, addToast, t]);
 
-  useEffect(() => { fetchProducts(); fetch("/api/categories").then(r => r.json()).then(d => setCategories(d.categories || d || [])).catch(() => {}); }, []);
+  useEffect(() => { fetchProducts(); fetch("/api/categories").then(r => r.json()).then(d => setCategories(d.categories || d || [])).catch(() => console.warn("Failed to fetch categories")); }, []);
 
   const handleSearch = (val: string) => { setSearch(val); fetchProducts(1, val, filter); };
   const handleFilter = (val: string) => { setFilter(val); fetchProducts(1, search, val); };

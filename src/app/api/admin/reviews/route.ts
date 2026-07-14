@@ -30,7 +30,8 @@ export async function GET(request: Request) {
     ]);
 
     return NextResponse.json({ reviews, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
-  } catch {
+  } catch (e) {
+    console.error("Error fetching admin reviews:", e);
     return NextResponse.json({ reviews: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } });
   }
 }
@@ -45,7 +46,8 @@ export async function PUT(request: Request) {
     const { id, isApproved } = await request.json();
     const review = await db.review.update({ where: { id }, data: { isApproved } });
     return NextResponse.json({ review });
-  } catch {
+  } catch (e) {
+    console.error("Error updating review:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
@@ -62,7 +64,8 @@ export async function DELETE(request: Request) {
     if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
     await db.review.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (e) {
+    console.error("Error deleting review:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

@@ -9,7 +9,8 @@ export async function GET() {
       orderBy: { order: "asc" },
     });
     return NextResponse.json({ categories });
-  } catch {
+  } catch (e) {
+    console.error("Error fetching categories:", e);
     return NextResponse.json({ categories: [] });
   }
 }

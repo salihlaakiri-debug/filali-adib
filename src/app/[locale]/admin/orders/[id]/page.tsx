@@ -56,7 +56,7 @@ export default function OrderDetailPage() {
         if (found) setOrder(found);
         else { addToast(t("الطلب غير موجود", "Order not found")); router.push(`/${locale}/admin/orders`); }
       })
-      .catch(() => {})
+      .catch(() => console.warn("Failed to fetch order"))
       .finally(() => setLoading(false));
   }, [id]);
 

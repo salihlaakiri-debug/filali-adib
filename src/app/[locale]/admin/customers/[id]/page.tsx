@@ -40,7 +40,7 @@ export default function CustomerDetailPage() {
         if (found) setCustomer(found);
         else { addToast(t("العميل غير موجود", "Customer not found")); router.push(`/${locale}/admin/customers`); }
       })
-      .catch(() => {})
+      .catch(() => console.warn("Failed to fetch customer"))
       .finally(() => setLoading(false));
   }, [id]);
 

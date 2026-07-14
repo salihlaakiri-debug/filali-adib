@@ -14,7 +14,8 @@ export async function GET() {
     });
 
     return NextResponse.json({ addresses });
-  } catch {
+  } catch (e) {
+    console.error("Error fetching addresses:", e);
     return NextResponse.json({ addresses: [] });
   }
 }
@@ -42,7 +43,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ address }, { status: 201 });
-  } catch {
+  } catch (e) {
+    console.error("Error creating address:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
@@ -59,7 +61,8 @@ export async function DELETE(request: Request) {
 
     await db.address.deleteMany({ where: { id, userId: session.user!.id } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (e) {
+    console.error("Error deleting address:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

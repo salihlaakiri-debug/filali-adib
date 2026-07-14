@@ -49,7 +49,7 @@ export default function AccountPage() {
   useEffect(() => {
     if (isAdmin) {
       setStatsLoading(true);
-      fetch("/api/admin/stats").then((r) => r.json()).then(setStats).catch(() => {}).finally(() => setStatsLoading(false));
+      fetch("/api/admin/stats").then((r) => r.json()).then(setStats).catch(() => console.warn("Failed to fetch admin stats")).finally(() => setStatsLoading(false));
     }
   }, [isAdmin]);
 

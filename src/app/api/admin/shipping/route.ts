@@ -7,7 +7,8 @@ export async function GET() {
     if (!db) return NextResponse.json({ shippingMethods: [] });
     const shippingMethods = await db.shippingMethod.findMany({ orderBy: { order: "asc" } });
     return NextResponse.json({ shippingMethods });
-  } catch {
+  } catch (e) {
+    console.error("Error fetching shipping methods:", e);
     return NextResponse.json({ shippingMethods: [] });
   }
 }
@@ -28,7 +29,8 @@ export async function POST(request: Request) {
       data: { name, nameAr: nameAr || name, description, price: price || 0, freeAbove: freeAbove || null, estimatedDays: estimatedDays || null, order: order ?? ((maxOrder?.order || 0) + 1) },
     });
     return NextResponse.json({ method }, { status: 201 });
-  } catch {
+  } catch (e) {
+    console.error("Error creating shipping method:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
@@ -54,7 +56,8 @@ export async function PUT(request: Request) {
     if (isActive !== undefined) data.isActive = isActive;
     const method = await db.shippingMethod.update({ where: { id }, data });
     return NextResponse.json({ method });
-  } catch {
+  } catch (e) {
+    console.error("Error updating shipping method:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
@@ -71,7 +74,8 @@ export async function DELETE(request: Request) {
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
     await db.shippingMethod.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (e) {
+    console.error("Error deleting shipping method:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

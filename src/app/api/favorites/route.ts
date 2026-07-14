@@ -15,7 +15,8 @@ export async function GET() {
     });
 
     return NextResponse.json({ favorites });
-  } catch {
+  } catch (e) {
+    console.error("Error fetching favorites:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
@@ -43,7 +44,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ added: true });
-  } catch {
+  } catch (e) {
+    console.error("Error toggling favorite:", e);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

@@ -31,7 +31,7 @@ export function Navbar() {
     fetch("/api/gold-price")
       .then((r) => r.json())
       .then((d) => setGoldPrice({ price18k: d.price18k, change: d.change, changePercent: d.changePercent }))
-      .catch(() => {});
+      .catch(() => console.warn("Failed to fetch navbar data"));
   }, []);
 
   const navLinks = [
