@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
-let storeSettings: Record<string, any> = {
+const defaults = {
   storeName: "Filali Adib - Artiste Joaillier",
   storeEmail: "contact@filaliadib.com",
   storePhone: "+212 522-123456",
@@ -15,19 +16,35 @@ let storeSettings: Record<string, any> = {
 };
 
 export async function GET() {
-  return NextResponse.json({ settings: storeSettings });
+  try {
+    if (!db) return NextResponse.json({ settings: defaults });
+    let settings = await db.storeSettings.findUnique({ where: { id: "default" } });
+    if (!settings) {
+      settings = await db.storeSettings.create({ data: { id: "default", ...defaults } });
+    }
+    return NextResponse.json({ settings });
+  } catch {
+    return NextResponse.json({ settings: defaults });
+  }
 }
 
 export async function POST(request: Request) {
   try {
+    if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     const session = await auth();
-    if (!session || (session.user as any)?.role !== "ADMIN") {
+    if (!session || !["ADMIN", "SUPER_ADMIN"].includes((session.user as any)?.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
     const body = await request.json();
-    storeSettings = { ...storeSettings, ...body };
-    return NextResponse.json({ settings: storeSettings });
-  } catch {
+    const settings = await db.storeSettings.upsert({
+      where: { id: "default" },
+      update: body,
+      create: { id: "default", ...defaults, ...body },
+    });
+    return NextResponse.json({ settings });
+  } catch (error) {
+    console.error("Error saving settings:", error);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

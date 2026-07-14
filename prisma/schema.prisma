@@ -382,3 +382,40 @@ model AnalyticsEvent {
   userAgent String?
   createdAt DateTime @default(now())
 }
+
+// ============================================
+// STORE SETTINGS
+// ============================================
+
+model StoreSettings {
+  id                    String   @id @default("default")
+  storeName             String   @default("Filali Adib - Artiste Joaillier")
+  storeEmail            String   @default("contact@filaliadib.com")
+  storePhone            String   @default("+212 522-123456")
+  currency              String   @default("MAD")
+  shippingLocal         Float    @default(150)
+  freeShippingAbove     Float    @default(5000)
+  shippingInternational Float    @default(500)
+  minInternationalOrder Float    @default(10000)
+  taxRate               Float    @default(20)
+  taxId                 String   @default("12345678")
+  updatedAt             DateTime @updatedAt
+}
+
+// ============================================
+// SHIPPING METHODS
+// ============================================
+
+model ShippingMethod {
+  id            String   @id @default(cuid())
+  name          String
+  nameAr        String?
+  description   String?
+  price         Float    @default(0)
+  freeAbove     Float?
+  estimatedDays String?
+  isActive      Boolean  @default(true)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

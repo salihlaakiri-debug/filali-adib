@@ -1,114 +1,129 @@
 "use client";
 
-import { Save, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
+import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
+import { Save, Loader2, Store, Truck, Receipt } from "lucide-react";
+import { AdminLoading } from "@/components/admin";
 import { useToast } from "@/components/motion/Toast";
-import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function AdminSettingsPage() {
+  const locale = useLocale();
   const { addToast } = useToast();
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
-    storeName: "Filali Adib - Artiste Joaillier",
-    storeEmail: "contact@filaliadib.com",
-    storePhone: "+212 522-123456",
-    currency: "MAD",
-    shippingLocal: 150,
-    freeShippingAbove: 5000,
-    shippingInternational: 500,
-    minInternationalOrder: 10000,
-    taxRate: 20,
-    taxId: "12345678",
+    storeName: "", storeEmail: "", storePhone: "", currency: "MAD",
+    shippingLocal: 150, freeShippingAbove: 5000, shippingInternational: 500, minInternationalOrder: 10000,
+    taxRate: 20, taxId: "",
   });
+
+  useEffect(() => {
+    fetch("/api/admin/settings").then((r) => r.json()).then((d) => {
+      if (d.settings) setSettings(d.settings);
+    }).finally(() => setLoading(false));
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await fetch("/api/admin/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings) });
-      addToast("تم حفظ الإعدادات بنجاح");
-    } catch { addToast("حدث خطأ أثناء الحفظ"); } finally { setSaving(false); }
+      const res = await fetch("/api/admin/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings) });
+      if (!res.ok) throw new Error();
+      addToast(locale === "ar" ? "تم حفظ الإعدادات" : "Settings saved");
+    } catch { addToast(locale === "ar" ? "خطأ" : "Error"); }
+    setSaving(false);
   };
 
+  if (loading) return <AdminLoading />;
+
+  const t = (ar: string, fr: string) => locale === "ar" ? ar : fr;
+
   return (
-    <div>
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">الإعدادات</h1>
-        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleSave} disabled={saving}
-          className="bg-gold text-secondary px-4 py-2 rounded-lg font-medium hover:bg-gold-dark transition-colors flex items-center gap-2 shadow-lg shadow-gold/20 disabled:opacity-50">
-          {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} حفظ
+    <div className="max-w-4xl space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-secondary">{t("الإعدادات", "Settings")}</h1>
+        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleSave} disabled={saving}
+          className="flex items-center gap-2 bg-gold text-secondary px-6 py-2.5 rounded-xl font-medium text-sm hover:bg-gold-dark transition-colors disabled:opacity-50 shadow-sm">
+          {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+          {t("حفظ", "Save")}
         </motion.button>
-      </motion.div>
+      </div>
 
-      <StaggerContainer className="space-y-6" staggerDelay={0.12}>
-        <StaggerItem>
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">معلومات المتجر</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {[
-                { label: "اسم المتجر", key: "storeName" },
-                { label: "البريد الإلكتروني", key: "storeEmail", type: "email" },
-                { label: "الهاتف", key: "storePhone", type: "tel" },
-              ].map((field) => (
-                <div key={field.key}>
-                  <label className="block text-sm text-gray-600 mb-1">{field.label}</label>
-                  <input type={field.type || "text"} value={(settings as any)[field.key]}
-                    onChange={(e) => setSettings({ ...settings, [field.key]: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-                </div>
-              ))}
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">العملة</label>
-                <select value={settings.currency} onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold">
-                  <option value="MAD">درهم مغربي (MAD)</option><option value="EUR">يورو (EUR)</option><option value="USD">دولار (USD)</option>
-                </select>
-              </div>
+      {/* Store Info */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center"><Store size={20} className="text-gold" /></div>
+          <h2 className="font-semibold text-secondary">{t("معلومات المتجر", "Store Info")}</h2>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          {[
+            { label: t("اسم المتجر", "Store Name"), key: "storeName" },
+            { label: t("البريد الإلكتروني", "Email"), key: "storeEmail", type: "email" },
+            { label: t("الهاتف", "Phone"), key: "storePhone", type: "tel" },
+          ].map((f) => (
+            <div key={f.key}>
+              <label className="block text-sm font-medium text-gray-600 mb-1">{f.label}</label>
+              <input type={f.type || "text"} value={(settings as any)[f.key]}
+                onChange={(e) => setSettings({ ...settings, [f.key]: e.target.value })}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20" />
             </div>
+          ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">{t("العملة", "Currency")}</label>
+            <select value={settings.currency} onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gold">
+              <option value="MAD">MAD - {t("درهم مغربي", "Dirham")}</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="USD">USD - Dollar</option>
+            </select>
           </div>
-        </StaggerItem>
+        </div>
+      </div>
 
-        <StaggerItem>
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">إعدادات الشحن</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {[
-                { label: "رسوم الشحن المحلي", key: "shippingLocal" },
-                { label: "شحن مجاني فوق", key: "freeShippingAbove" },
-                { label: "رسوم الشحن الدولي", key: "shippingInternational" },
-                { label: "الحد الأدنى للشحن الدولي", key: "minInternationalOrder" },
-              ].map((field) => (
-                <div key={field.key}>
-                  <label className="block text-sm text-gray-600 mb-1">{field.label}</label>
-                  <input type="number" value={(settings as any)[field.key]}
-                    onChange={(e) => setSettings({ ...settings, [field.key]: Number(e.target.value) })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-                </div>
-              ))}
+      {/* Shipping */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center"><Truck size={20} className="text-gold" /></div>
+          <h2 className="font-semibold text-secondary">{t("إعدادات الشحن", "Shipping")}</h2>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          {[
+            { label: t("رسوم الشحن المحلي (د.م)", "Local Shipping (MAD)"), key: "shippingLocal" },
+            { label: t("شحن مجاني فوق (د.م)", "Free Above (MAD)"), key: "freeShippingAbove" },
+            { label: t("رسوم الشحن الدولي (د.م)", "International (MAD)"), key: "shippingInternational" },
+            { label: t("الحد الأدنى الدولي (د.م)", "Min International (MAD)"), key: "minInternationalOrder" },
+          ].map((f) => (
+            <div key={f.key}>
+              <label className="block text-sm font-medium text-gray-600 mb-1">{f.label}</label>
+              <input type="number" value={(settings as any)[f.key]}
+                onChange={(e) => setSettings({ ...settings, [f.key]: Number(e.target.value) })}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20" />
             </div>
-          </div>
-        </StaggerItem>
+          ))}
+        </div>
+      </div>
 
-        <StaggerItem>
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">الضرائب</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">نسبة الضريبة (%)</label>
-                <input type="number" value={settings.taxRate}
-                  onChange={(e) => setSettings({ ...settings, taxRate: Number(e.target.value) })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">رقم التعريف الضريبي</label>
-                <input type="text" value={settings.taxId}
-                  onChange={(e) => setSettings({ ...settings, taxId: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-              </div>
-            </div>
+      {/* Tax */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-50">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center"><Receipt size={20} className="text-gold" /></div>
+          <h2 className="font-semibold text-secondary">{t("الضرائب", "Tax")}</h2>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">{t("نسبة الضريبة (%)", "Tax Rate (%)")}</label>
+            <input type="number" value={settings.taxRate}
+              onChange={(e) => setSettings({ ...settings, taxRate: Number(e.target.value) })}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20" />
           </div>
-        </StaggerItem>
-      </StaggerContainer>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">{t("رقم التعريف الضريبي", "Tax ID")}</label>
+            <input type="text" value={settings.taxId}
+              onChange={(e) => setSettings({ ...settings, taxId: e.target.value })}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
