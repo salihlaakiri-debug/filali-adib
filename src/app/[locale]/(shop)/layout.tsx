@@ -2,7 +2,6 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
-import { GoldPriceTicker } from "@/components/GoldPriceTicker";
 
 export default function ShopLayout({
   children,
@@ -11,9 +10,8 @@ export default function ShopLayout({
 }) {
   return (
     <>
-      <GoldPriceTicker />
       <Navbar />
-      <main className="flex-1 pt-20">
+      <main className="flex-1 pt-[96px]">
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />

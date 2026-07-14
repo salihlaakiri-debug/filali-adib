@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { Menu, X, ShoppingBag, Search, User, Heart, LogIn, ChevronDown } from "lucide-react";
+import { Menu, X, ShoppingBag, Search, User, Heart, LogIn, ChevronDown, Diamond, TrendingUp, TrendingDown } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useSession } from "next-auth/react";
 import { FaLogo } from "@/components/icons";
+
+interface GoldPrice { price18k: number; currency: string; updatedAt: string; change?: number; changePercent?: number; }
 
 export function Navbar() {
   const t = useTranslations();
@@ -16,6 +18,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [goldPrice, setGoldPrice] = useState<GoldPrice | null>(null);
   const itemCount = useCartStore((s) => s.getItemCount());
   const { data: session } = useSession();
   const { scrollY } = useScroll();
@@ -37,6 +40,13 @@ export function Navbar() {
 
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
 
+  useEffect(() => {
+    fetch("/api/gold-price")
+      .then((r) => r.json())
+      .then((d) => setGoldPrice({ price18k: d.price18k, currency: d.currency || "MAD", updatedAt: d.updatedAt, change: d.change, changePercent: d.changePercent }))
+      .catch(() => {});
+  }, []);
+
   const navLinks = [
     { href: "/", label: t("nav.home") },
     { href: "/products", label: t("nav.products") },
@@ -55,6 +65,37 @@ export function Navbar() {
           : "bg-secondary/90 backdrop-blur-sm border-b border-gold/15 py-0"
       }`}
     >
+      {/* Gold Price Strip */}
+      {goldPrice && (
+        <div className="bg-secondary border-b border-gold/10">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex items-center justify-center gap-3 py-1.5 text-xs">
+              <Diamond size={10} className="text-gold/60" />
+              <span className="text-gold/80 font-medium">سعر الذهب</span>
+              <span className="text-gray-600">|</span>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={goldPrice.price18k}
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-gold font-bold"
+                >
+                  {goldPrice.price18k.toLocaleString()} د.م/غ
+                </motion.span>
+              </AnimatePresence>
+              <span className="text-gray-600">|</span>
+              <span className="text-gray-500">عيار 18</span>
+              {goldPrice.change !== undefined && goldPrice.change !== 0 && (
+                <span className={`flex items-center gap-0.5 ${(goldPrice.change || 0) >= 0 ? "text-green-400" : "text-red-400"}`}>
+                  {(goldPrice.change || 0) >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                  <span>{(goldPrice.change || 0) >= 0 ? "+" : ""}{goldPrice.changePercent?.toFixed(1)}%</span>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top gold accent line */}
       <div className="h-[1px] bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
@@ -75,7 +116,7 @@ export function Navbar() {
             </motion.div>
             <div className="flex flex-col">
               <span className="font-playfair text-gold font-bold tracking-wider text-sm">
-                FILALI ADIBE
+                FILALI ADIB
               </span>
               <span className="text-gold-light/60 text-[10px] tracking-[3px]">
                 ARTISTE JOAILLIER

@@ -49,7 +49,7 @@ export function Footer() {
                 </motion.div>
                 <div className="flex flex-col">
                   <span className="font-playfair text-gold font-bold tracking-wider text-sm">
-                    FILALI ADIBE
+                    FILALI ADIB
                   </span>
                   <span className="text-gold-light/50 text-[10px] tracking-[3px]">
                     ARTISTE JOAILLIER
