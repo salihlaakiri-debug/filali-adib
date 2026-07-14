@@ -23,7 +23,7 @@ export default function NewProductPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState({
     name: "", nameAr: "", nameFr: "", slug: "", description: "", descriptionFr: "",
-    karat: "K21", weight: 5, stock: 10, categoryId: "", sku: "",
+    karat: "K18", weight: 5, stock: 10, categoryId: "", sku: "",
     isFeatured: false, isNew: true, certification: "", imageUrl: "",
     profitMargin: 200,
   });
@@ -112,8 +112,6 @@ export default function NewProductPage() {
               <select value={form.karat} onChange={(e) => setForm({ ...form, karat: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold">
                 <option value="K18">عيار 18</option>
-                <option value="K21">عيار 21</option>
-                <option value="K24">عيار 24</option>
               </select>
             </div>
             <div>

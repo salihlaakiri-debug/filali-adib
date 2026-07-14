@@ -108,8 +108,6 @@ export default function ProductsPage() {
   const karats = [
     { value: "all", label: "الكل" },
     { value: "18", label: "عيار 18" },
-    { value: "21", label: "عيار 21" },
-    { value: "24", label: "عيار 24" },
   ];
 
   const hasFilters = selectedCategory !== "all";
