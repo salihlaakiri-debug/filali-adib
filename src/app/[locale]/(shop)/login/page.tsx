@@ -47,13 +47,19 @@ export default function LoginPage() {
         identifier,
         password: formData.password,
         redirect: false,
-        callbackUrl: L("/"),
       });
       if (result?.error) {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
         return;
       }
-      window.location.href = result?.url || L("/");
+      const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
+      const sessionData = await sessionRes.json();
+      const role = sessionData?.user?.role;
+      if (role === "ADMIN" || role === "SUPER_ADMIN") {
+        window.location.href = L("/admin/dashboard");
+      } else {
+        window.location.href = L("/");
+      }
     } catch {
       setError(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
     } finally {
