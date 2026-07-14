@@ -3,7 +3,7 @@
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Plus, Edit2, Trash2, Eye, EyeOff, Package, AlertTriangle } from "lucide-react";
+import { Plus, Edit2, Trash2, Eye, EyeOff, Package, AlertTriangle, Star } from "lucide-react";
 import { AdminTable, AdminSearch, AdminPagination, AdminBadge, AdminFilterTabs, AdminConfirmDialog, AdminLoading } from "@/components/admin";
 import { useToast } from "@/components/motion/Toast";
 import { motion } from "framer-motion";
@@ -93,7 +93,7 @@ export default function AdminProductsPage() {
     { key: "status", label: locale === "ar" ? "الحالة" : "Status", render: (p: Product) => (
       <div className="flex items-center gap-2">
         <AdminBadge status={p.isActive ? "ACTIVE" : "INACTIVE"} label={p.isActive ? (locale === "ar" ? "نشط" : "Active") : (locale === "ar" ? "معطل" : "Inactive")} />
-        {p.isFeatured && <span className="text-[10px] text-gold">★</span>}
+        {p.isFeatured && <Star size={12} className="text-gold fill-gold" />}
       </div>
     )},
     { key: "actions", label: locale === "ar" ? "إجراءات" : "Actions", className: "text-end",

@@ -2,7 +2,7 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect } from "react";
-import { SlidersHorizontal, Grid3X3, List, ChevronDown, X, Package } from "lucide-react";
+import { SlidersHorizontal, Grid3X3, List, ChevronDown, X, Package, Circle, Gem, CircleDot, Sparkles, Watch, Crown, Star } from "lucide-react";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -96,13 +96,13 @@ export default function ProductsPage() {
   }, [selectedCategory, selectedKarat, sortBy]);
 
   const categories = [
-    { value: "all", label: "الكل", icon: "✦" },
-    { value: "rings", label: "خواتم", icon: "💍" },
-    { value: "necklaces", label: "سلاسل", icon: "📿" },
-    { value: "earrings", label: "أقراط", icon: "✨" },
-    { value: "bracelets", label: "أساور", icon: "⌚" },
-    { value: "sets", label: "أطقم", icon: "👑" },
-    { value: "special", label: "مميزة", icon: "💎" },
+    { value: "all", label: "الكل", Icon: Circle },
+    { value: "rings", label: "خواتم", Icon: CircleDot },
+    { value: "necklaces", label: "سلاسل", Icon: Gem },
+    { value: "earrings", label: "أقراط", Icon: Sparkles },
+    { value: "bracelets", label: "أساور", Icon: Watch },
+    { value: "sets", label: "أطقم", Icon: Crown },
+    { value: "special", label: "مميزة", Icon: Star },
   ];
 
   const karats = [
@@ -190,7 +190,7 @@ export default function ProductsPage() {
                           : "text-gray-600 hover:bg-gray-50 hover:text-secondary"
                       }`}
                     >
-                      <span className="text-base">{cat.icon}</span>
+                      <cat.Icon size={16} />
                       <span>{cat.label}</span>
                     </button>
                   ))}
