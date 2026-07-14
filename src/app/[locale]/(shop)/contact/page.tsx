@@ -14,12 +14,27 @@ export default function ContactPage() {
   const { addToast } = useToast();
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    addToast(locale === "ar" ? "تم إرسال رسالتك بنجاح" : "Message sent successfully");
-    setTimeout(() => setSubmitted(false), 3000);
+    setSending(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+        addToast(locale === "ar" ? "تم إرسال رسالتك بنجاح" : "Message sent successfully");
+        setTimeout(() => setSubmitted(false), 3000);
+      } else {
+        addToast(locale === "ar" ? "خطأ في الإرسال" : "Failed to send");
+      }
+    } catch {
+      addToast(locale === "ar" ? "خطأ في الاتصال" : "Connection error");
+    } finally { setSending(false); }
   };
 
   const handleWhatsApp = () => {
@@ -173,8 +188,8 @@ export default function ContactPage() {
                   </div>
 
                   <div className="flex gap-3">
-                    <motion.button type="submit" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                      className="flex-1 bg-gold text-secondary px-6 py-3.5 rounded-xl font-semibold hover:bg-gold-dark transition-all flex items-center justify-center gap-2 shadow-lg shadow-gold/20 hover:shadow-gold/40">
+                    <motion.button type="submit" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} disabled={sending}
+                      className="flex-1 bg-gold text-secondary px-6 py-3.5 rounded-xl font-semibold hover:bg-gold-dark transition-all flex items-center justify-center gap-2 shadow-lg shadow-gold/20 hover:shadow-gold/40 disabled:opacity-50">
                       {submitted ? <><CheckCircle size={18} /> {locale === "ar" ? "تم الإرسال" : "Envoyé"}</> : <><Send size={18} /> {t("submit")}</>}
                     </motion.button>
                     <motion.button type="button" onClick={handleWhatsApp} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}

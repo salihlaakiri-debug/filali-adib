@@ -41,8 +41,17 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const body = await request.json();
-    const { id, ...data } = body;
+    const { id, name, nameAr, description, price, freeAbove, estimatedDays, order, isActive } = body;
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+    const data: Record<string, any> = {};
+    if (name !== undefined) data.name = name;
+    if (nameAr !== undefined) data.nameAr = nameAr;
+    if (description !== undefined) data.description = description;
+    if (price !== undefined) data.price = price;
+    if (freeAbove !== undefined) data.freeAbove = freeAbove;
+    if (estimatedDays !== undefined) data.estimatedDays = estimatedDays;
+    if (order !== undefined) data.order = order;
+    if (isActive !== undefined) data.isActive = isActive;
     const method = await db.shippingMethod.update({ where: { id }, data });
     return NextResponse.json({ method });
   } catch {

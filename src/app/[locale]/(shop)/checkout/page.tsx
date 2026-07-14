@@ -68,7 +68,7 @@ export default function CheckoutPage() {
       if (!res.ok) { addToast(data.error || (locale === "ar" ? "حدث خطأ" : "Error occurred")); return; }
       clearCart();
       addToast(locale === "ar" ? `تم إنشاء الطلب بنجاح` : "Order placed successfully");
-      router.push(L("/order-success"));
+      router.push(`${L("/order-success")}?order=${data.order.orderNumber}`);
     } catch {
       addToast(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
     } finally { setLoading(false); }

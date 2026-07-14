@@ -32,9 +32,20 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const { type, karat, price, margins } = body;
+    const { type, karat, price, prices, margins } = body;
 
-    // Update gold price
+    // Update gold price(s)
+    if (type === "goldPrice" && prices && Array.isArray(prices)) {
+      for (const p of prices) {
+        if (p.karat && p.price) {
+          await db.goldPrice.updateMany({ where: { karat: p.karat, isActive: true }, data: { isActive: false } });
+          await db.goldPrice.create({ data: { karat: p.karat, price: p.price, currency: "MAD", isActive: true } });
+        }
+      }
+      return NextResponse.json({ success: true });
+    }
+
+    // Legacy single karat support
     if (type === "goldPrice" && karat && price) {
       await db.goldPrice.updateMany({ where: { karat, isActive: true }, data: { isActive: false } });
       const newPrice = await db.goldPrice.create({ data: { karat, price, currency: "MAD", isActive: true } });

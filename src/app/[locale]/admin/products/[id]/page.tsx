@@ -18,6 +18,7 @@ export default function ProductEditPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [goldPrice, setGoldPrice] = useState(1100);
   const [form, setForm] = useState({
     name: "", nameAr: "", nameFr: "", sku: "", slug: "", description: "", descriptionFr: "",
     karat: "K18", weight: 5, profitMargin: 200, stock: 10, categoryId: "",
@@ -29,7 +30,8 @@ export default function ProductEditPage() {
     Promise.all([
       fetch(`/api/admin/products?search=&limit=100`).then(r => r.json()),
       fetch("/api/categories").then(r => r.json()),
-    ]).then(([productsData, catData]) => {
+      fetch("/api/gold-price").then(r => r.json()),
+    ]).then(([productsData, catData, goldData]) => {
       const product = productsData.products?.find((p: any) => p.id === id);
       if (product) {
         setForm({
@@ -43,6 +45,7 @@ export default function ProductEditPage() {
         });
       } else { addToast(locale === "ar" ? "المنتج غير موجود" : "Product not found"); router.push(L("/admin/products")); }
       setCategories(catData.categories || catData || []);
+      if (goldData.price18k) setGoldPrice(goldData.price18k);
     }).catch(() => setLoading(false)).finally(() => setLoading(false));
   }, [id]);
 
@@ -68,7 +71,6 @@ export default function ProductEditPage() {
   if (loading) return <AdminLoading />;
 
   const pricePreview = (() => {
-    const goldPrice = 1100;
     return (goldPrice + form.profitMargin) * form.weight;
   })();
 
@@ -201,7 +203,7 @@ export default function ProductEditPage() {
             <div className="p-3 bg-gold/5 rounded-xl">
               <p className="text-xs text-gray-500 mb-1">{locale === "ar" ? "السعر المحسوب" : "Calculated Price"}</p>
               <p className="text-lg font-bold text-gold">{pricePreview.toLocaleString()} د.م</p>
-              <p className="text-[11px] text-gray-400 mt-1">(1100 + {form.profitMargin}) × {form.weight}g</p>
+              <p className="text-[11px] text-gray-400 mt-1">({goldPrice} + {form.profitMargin}) × {form.weight}g</p>
             </div>
           </div>
 

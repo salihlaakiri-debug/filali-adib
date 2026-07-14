@@ -12,7 +12,7 @@ export default function AdminPricingPage() {
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState("");
-  const [goldPrice18k, setGoldPrice18k] = useState(1100);
+  const [goldPrices, setGoldPrices] = useState<Record<string, number>>({ K18: 1100, K21: 1300, K24: 1500 });
   const [margins, setMargins] = useState<{ id?: string; categoryId: string; categoryName: string; margin: number }[]>([]);
   const [calcCategory, setCalcCategory] = useState(0);
   const [calcWeight, setCalcWeight] = useState(10);
@@ -21,8 +21,9 @@ export default function AdminPricingPage() {
     fetch("/api/admin/pricing")
       .then((r) => r.json())
       .then((d) => {
-        const k18 = d.goldPrices?.find((p: any) => p.karat === "K18");
-        if (k18) setGoldPrice18k(Number(k18.price));
+        const prices: Record<string, number> = { K18: 1100, K21: 1300, K24: 1500 };
+        d.goldPrices?.forEach((p: any) => { if (p.karat) prices[p.karat] = Number(p.price); });
+        setGoldPrices(prices);
 
         const cats = d.categories || [];
         const existingMargins = d.margins || [];
@@ -34,15 +35,15 @@ export default function AdminPricingPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const saveGoldPrice = async () => {
+  const saveGoldPrices = async () => {
     setSaving("gold");
     try {
       const res = await fetch("/api/admin/pricing", {
         method: "PUT", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "goldPrice", karat: "K18", price: goldPrice18k }),
+        body: JSON.stringify({ type: "goldPrice", prices: Object.entries(goldPrices).map(([karat, price]) => ({ karat, price })) }),
       });
       if (!res.ok) throw new Error();
-      addToast(locale === "ar" ? "تم حفظ سعر الذهب" : "Gold price saved");
+      addToast(locale === "ar" ? "تم حفظ أسعار الذهب" : "Gold prices saved");
     } catch { addToast(locale === "ar" ? "خطأ" : "Error"); }
     setSaving("");
   };
@@ -63,7 +64,7 @@ export default function AdminPricingPage() {
   if (loading) return <AdminLoading />;
 
   const calcPrice = margins[calcCategory]
-    ? (goldPrice18k + margins[calcCategory].margin) * calcWeight
+    ? (goldPrices.K18 + margins[calcCategory].margin) * calcWeight
     : 0;
 
   return (
@@ -77,20 +78,29 @@ export default function AdminPricingPage() {
             <DollarSign size={20} className="text-gold" />
           </div>
           <div>
-            <h2 className="font-semibold text-secondary">{locale === "ar" ? "سعر الذهب" : "Gold Price"}</h2>
-            <p className="text-xs text-gray-400">K18 · {locale === "ar" ? "درهم مغربي" : "Moroccan Dirham"}</p>
+            <h2 className="font-semibold text-secondary">{locale === "ar" ? "أسعار الذهب" : "Gold Prices"}</h2>
+            <p className="text-xs text-gray-400">{locale === "ar" ? "درهم مغربي لكل غرام" : "Moroccan Dirham per gram"}</p>
           </div>
         </div>
-        <div className="flex items-end gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-600 mb-1">{locale === "ar" ? "السعر لكل غرام (د.م)" : "Price per gram (MAD)"}</label>
-            <input type="number" value={goldPrice18k} onChange={(e) => setGoldPrice18k(parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-lg font-bold focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20" />
-          </div>
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={saveGoldPrice} disabled={saving === "gold"}
+        <div className="space-y-3">
+          {(["K18", "K21", "K24"] as const).map((karat) => (
+            <div key={karat} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+              <span className={`text-sm font-bold min-w-[40px] px-2 py-1 rounded-lg text-center ${
+                karat === "K18" ? "bg-gold/10 text-gold" : karat === "K21" ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"
+              }`}>{karat}</span>
+              <div className="flex-1">
+                <input type="number" value={goldPrices[karat]} onChange={(e) => setGoldPrices((p) => ({ ...p, [karat]: parseFloat(e.target.value) || 0 }))}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20" />
+              </div>
+              <span className="text-xs text-gray-500">د.م/غ</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 flex justify-end">
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={saveGoldPrices} disabled={saving === "gold"}
             className="flex items-center gap-2 bg-gold text-secondary px-6 py-3 rounded-xl font-medium text-sm hover:bg-gold-dark transition-colors disabled:opacity-50 shadow-sm">
             {saving === "gold" ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            {locale === "ar" ? "حفظ" : "Save"}
+            {locale === "ar" ? "حفظ الأسعار" : "Save Prices"}
           </motion.button>
         </div>
       </div>
@@ -123,7 +133,7 @@ export default function AdminPricingPage() {
               <span className="text-xs text-gray-500">د.م/غ</span>
               <div className="flex-1" />
               <span className="text-sm text-gray-500">
-                {locale === "ar" ? "السعر:" : "Price:"} <span className="font-medium text-secondary">{(goldPrice18k + m.margin).toLocaleString()} د.م/غ</span>
+                {locale === "ar" ? "السعر:" : "Price:"} <span className="font-medium text-secondary">{(goldPrices.K18 + m.margin).toLocaleString()} د.م/غ</span>
               </span>
             </div>
           ))}
@@ -154,7 +164,7 @@ export default function AdminPricingPage() {
         </div>
         <div className="p-4 bg-gold/5 rounded-xl">
           <p className="text-sm text-gray-500 mb-1">{locale === "ar" ? "الصيغة" : "Formula"}</p>
-          <p className="text-sm font-mono text-secondary mb-2">({goldPrice18k} + {margins[calcCategory]?.margin || 0}) × {calcWeight}g</p>
+          <p className="text-sm font-mono text-secondary mb-2">({goldPrices.K18} + {margins[calcCategory]?.margin || 0}) × {calcWeight}g</p>
           <p className="text-2xl font-bold text-gold">{calcPrice.toLocaleString()} د.م</p>
         </div>
       </div>
