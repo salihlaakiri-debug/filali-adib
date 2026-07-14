@@ -7,13 +7,14 @@ import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Package, ShoppingCart, DollarSign, Users, Star,
-  Tag, Truck, BarChart3, Settings, LogOut, Loader2, Menu, X, ChevronLeft, Bell,
+  Tag, Truck, BarChart3, Settings, LogOut, Loader2, Menu, X, ChevronLeft, Bell, FolderTree,
 } from "lucide-react";
 import { FaLogo } from "@/components/icons";
 
 const menuItems = [
   { href: "/admin/dashboard", icon: LayoutDashboard, labelAr: "لوحة التحكم", labelFr: "Dashboard" },
   { href: "/admin/products", icon: Package, labelAr: "المنتجات", labelFr: "Produits" },
+  { href: "/admin/categories", icon: FolderTree, labelAr: "التصنيفات", labelFr: "Catégories" },
   { href: "/admin/orders", icon: ShoppingCart, labelAr: "الطلبات", labelFr: "Commandes" },
   { href: "/admin/pricing", icon: DollarSign, labelAr: "التسعير", labelFr: "Prix" },
   { href: "/admin/customers", icon: Users, labelAr: "العملاء", labelFr: "Clients" },

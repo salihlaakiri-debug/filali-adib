@@ -27,7 +27,6 @@ model User {
   reviews       Review[]
   favorites     Favorite[]
   cart          CartItem[]
-  wishlist      Wishlist[]
   sessions      Session[]
   notifications Notification[]
 }
@@ -86,7 +85,6 @@ model Product {
   reviews       Review[]
   orderItems    OrderItem[]
   cartItems     CartItem[]
-  wishlistItems Wishlist[]
   favorites     Favorite[]
 }
 
@@ -283,17 +281,6 @@ model Favorite {
   @@unique([userId, productId])
 }
 
-model Wishlist {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([userId, productId])
-}
-
 model CartItem {
   id        String   @id @default(cuid())
   quantity  Int      @default(1)
@@ -390,8 +377,8 @@ model AnalyticsEvent {
 model StoreSettings {
   id                    String   @id @default("default")
   storeName             String   @default("Filali Adib - Artiste Joaillier")
-  storeEmail            String   @default("contact@filaliadib.com")
-  storePhone            String   @default("+212 522-123456")
+  storeEmail            String   @default("contact@filali-adib.ma")
+  storePhone            String   @default("+212 6 44 69 08 61")
   currency              String   @default("MAD")
   shippingLocal         Float    @default(150)
   freeShippingAbove     Float    @default(5000)

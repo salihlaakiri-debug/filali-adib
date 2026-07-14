@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
 import { FadeIn } from "@/components/motion";
 import { FaLogo } from "@/components/icons";
+import { STORE } from "@/lib/constants";
 import { MapPin, Phone, Mail, Clock, ArrowUp } from "lucide-react";
 
 export function Footer() {
@@ -150,15 +151,15 @@ export function Footer() {
               <div className="space-y-4">
                 <div className="flex items-start gap-3 text-gray-400 text-sm">
                   <MapPin size={16} className="text-gold/60 mt-0.5 flex-shrink-0" />
-                  <span>{locale === "ar" ? "الطالعة الكبيرة 42، فاس، المغرب" : "42 Talaa Kebira, Fès, Maroc"}</span>
+                  <span>{locale === "ar" ? STORE.address.ar : STORE.address.fr}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 text-sm">
                   <Phone size={16} className="text-gold/60 flex-shrink-0" />
-                  <span dir="ltr">+212 6 44 69 08 61</span>
+                  <span dir="ltr">{STORE.phone}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 text-sm">
                   <Mail size={16} className="text-gold/60 flex-shrink-0" />
-                  <span>contact@filali-adib.ma</span>
+                  <span>{STORE.email}</span>
                 </div>
                 <div className="flex items-start gap-3 text-gray-400 text-sm">
                   <Clock size={16} className="text-gold/60 mt-0.5 flex-shrink-0" />

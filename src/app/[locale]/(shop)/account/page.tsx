@@ -8,7 +8,7 @@ import Link from "next/link";
 import {
   User, Package, Heart, MapPin, LogOut, Loader2, ShoppingBag, Clock,
   CheckCircle2, Truck, Settings, LayoutDashboard, DollarSign, ShoppingCart,
-  Users, Star, Tag, BarChart3, Bell, TrendingUp, AlertTriangle, Eye,
+  Users, Star, Tag, BarChart3, Bell, TrendingUp, AlertTriangle, Eye, FolderTree,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,7 +39,12 @@ export default function AccountPage() {
   const isAdmin = ["ADMIN", "SUPER_ADMIN"].includes((session?.user as any)?.role);
 
   useEffect(() => { if (status === "unauthenticated") router.push(L("/login")); }, [status, router]);
-  useEffect(() => { if (session?.user) setProfile({ name: session.user.name || "", email: session.user.email || "", phone: "" }); }, [session]);
+  useEffect(() => {
+    if (session?.user) {
+      const u = session.user as any;
+      setProfile({ name: u.name || "", email: u.email || "", phone: u.phone || "" });
+    }
+  }, [session]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -65,6 +70,7 @@ export default function AccountPage() {
     const adminLinks = [
       { href: "/admin/dashboard", icon: LayoutDashboard, label: "لوحة التحكم", labelFr: "Dashboard", color: "text-blue-600", bg: "bg-blue-50" },
       { href: "/admin/products", icon: Package, label: "المنتجات", labelFr: "Products", color: "text-green-600", bg: "bg-green-50" },
+      { href: "/admin/categories", icon: FolderTree, label: "التصنيفات", labelFr: "Categories", color: "text-teal-600", bg: "bg-teal-50" },
       { href: "/admin/orders", icon: ShoppingCart, label: "الطلبات", labelFr: "Orders", color: "text-purple-600", bg: "bg-purple-50", badge: adminStats.pendingOrders },
       { href: "/admin/customers", icon: Users, label: "العملاء", labelFr: "Customers", color: "text-pink-600", bg: "bg-pink-50" },
       { href: "/admin/reviews", icon: Star, label: "التقييمات", labelFr: "Reviews", color: "text-yellow-600", bg: "bg-yellow-50", badge: adminStats.pendingReviews },
@@ -290,7 +296,24 @@ export default function AccountPage() {
                           className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-gray-50 focus:bg-white" />
                       </div>
                       <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} disabled={saving}
-                        onClick={() => { setSaving(true); addToast(locale === "ar" ? "تم حفظ التغييرات" : "Changes saved"); setSaving(false); }}
+                        onClick={async () => {
+                          setSaving(true);
+                          try {
+                            const res = await fetch("/api/profile", {
+                              method: "PUT",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ name: profile.name, phone: profile.phone }),
+                            });
+                            if (!res.ok) {
+                              const d = await res.json();
+                              addToast(d.error || (locale === "ar" ? "خطأ في الحفظ" : "Save error"));
+                              return;
+                            }
+                            addToast(locale === "ar" ? "تم حفظ التغييرات" : "Changes saved");
+                          } catch {
+                            addToast(locale === "ar" ? "خطأ في الاتصال" : "Connection error");
+                          } finally { setSaving(false); }
+                        }}
                         className="bg-gold text-secondary px-8 py-3 rounded-xl font-semibold hover:bg-gold-dark transition-all flex items-center gap-2 shadow-lg shadow-gold/20">
                         {saving ? <Loader2 size={16} className="animate-spin" /> : null}
                         {locale === "ar" ? "حفظ التغييرات" : "Save Changes"}

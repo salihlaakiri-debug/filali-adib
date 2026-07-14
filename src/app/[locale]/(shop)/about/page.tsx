@@ -4,9 +4,10 @@ import { useTranslations, useLocale } from "next-intl";
 import { Award, Heart, Shield, Gem, MapPin, Star, Users, Clock, ArrowLeft, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import { FadeIn, StaggerContainer, StaggerItem, TextReveal } from "@/components/motion";
+import { STORE, WHATSAPP_URL } from "@/lib/constants";
 
 const values = [
-  { icon: Gem, titleAr: "جودة لا تضاهى", titleFr: "Qualité Inégalée", descAr: "نختار أجود أنواع الذهب عيار 18 و21 و24 بمعايير دولية صارمة، مع شهادات أصالة مرفقة بكل قطعة", descFr: "Nous sélectionnons les meilleurs ors 18, 21 et 24 carats selon des normes internationales strictes, avec certificats d'authenticité pour chaque pièce" },
+  { icon: Gem, titleAr: "جودة لا تضاهى", titleFr: "Qualité Inégalée", descAr: "نختار أجود أنواع الذهب عيار 18 بمعايير دولية صارمة، مع شهادات أصالة مرفقة بكل قطعة", descFr: "Nous sélectionnons le meilleur or 18 carats selon des normes internationales strictes, avec certificats d'authenticité pour chaque pièce" },
   { icon: Award, titleAr: "حرفية فاسية أصيلة", titleFr: "Artisanat Fassi Authentique", descAr: "تراث فاس في صناعة المجوهرات يمتد لقرون. حرفيونا يجمعون بين تقنيات الأجداد وروح العصر", descFr: "L'héritage fassi dans la joaillerie remonte à des siècles. Nos artisans allient techniques ancestrales et esprit moderne" },
   { icon: Shield, titleAr: "ثقة وشفافية", titleFr: "Confiance et Transparence", descAr: "أسعار واضحة ووزن مضمون. كل معاملة موثقة بكل شفافية، لأن ثقتكم أغلى ما نملك", descFr: "Prix clairs et poids garanti. Chaque transaction documentée avec transparence, car votre confiance est notre plus grande richesse" },
   { icon: Heart, titleAr: "خدمة ما بعد البيع", titleFr: "Service Après-Vente", descAr: "صياغة مجانية، صيانة دورية، واستشارة مجانية مع خبرائنا لاختيار القطعة المثالية", descFr: "Gravure gratuite, entretien périodique, et consultation gratuite avec nos experts pour choisir la pièce parfaite" },
@@ -52,7 +53,7 @@ export default function AboutPage() {
           <FadeIn direction="up" delay={0.7}>
             <div className="flex items-center gap-3 mt-6">
               <MapPin size={18} className="text-gold" />
-              <span className="text-gray-300">{locale === "ar" ? "شارع الطالعة الكبيرة، فاس المرينية" : "Talaa Kebira, Fès el-Bali"}</span>
+                <span className="text-gray-300">{locale === "ar" ? STORE.address.ar.split("،")[0] : STORE.address.fr.split(", F")[0]}</span>
             </div>
           </FadeIn>
         </div>
@@ -101,7 +102,7 @@ export default function AboutPage() {
                 </p>
                 <div className="flex items-center gap-2 mt-6 text-gold">
                   <MapPin size={18} />
-                  <span className="font-medium">{locale === "ar" ? "شارع الطالعة الكبيرة، فاس المرينية، المغرب" : "42 Talaa Kebira, Fès el-Bali, Maroc"}</span>
+                  <span className="font-medium">{locale === "ar" ? STORE.address.ar : STORE.address.fr}</span>
                 </div>
               </div>
             </FadeIn>
@@ -206,7 +207,7 @@ export default function AboutPage() {
                 : "Nous vous accueillons dans notre boutique au cœur de Fès pour découvrir notre collection exclusive et consulter nos experts"}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="https://wa.me/212644690861?text=مرحباً، أريد زيارة المتجر" target="_blank" rel="noopener noreferrer"
+              <a href={`${WHATSAPP_URL}?text=مرحباً، أريد زيارة المتجر`} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-gold text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-gold-dark transition-all shadow-lg shadow-gold/20">
                 <Phone size={18} />
                 {locale === "ar" ? "احجز زيارتك" : "Réserver une visite"}

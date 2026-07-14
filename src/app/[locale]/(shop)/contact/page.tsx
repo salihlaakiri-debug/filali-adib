@@ -6,8 +6,7 @@ import { MapPin, Phone, Mail, Clock, Send, CheckCircle, MessageCircle } from "lu
 import { motion } from "framer-motion";
 import { FadeIn, StaggerContainer, StaggerItem, TextReveal } from "@/components/motion";
 import { useToast } from "@/components/motion/Toast";
-
-const WHATSAPP_NUMBER = "212644690861";
+import { STORE, WHATSAPP_URL } from "@/lib/constants";
 
 export default function ContactPage() {
   const t = useTranslations("contact");
@@ -29,15 +28,15 @@ export default function ContactPage() {
         ? `مرحباً فيلالي عديب، أريد الاستفسار عن:\n\nالاسم: ${formData.name || "غير محدد"}\nالموضوع: ${formData.subject || "عام"}\nالرسالة: ${formData.message || "لم تُذكر"}`
         : `Bonjour Filali Adib, je souhaite des informations:\n\nNom: ${formData.name || "Non précisé"}\nSujet: ${formData.subject || "Général"}\nMessage: ${formData.message || "Non mentionné"}`
     );
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
+    window.open(`${WHATSAPP_URL}?text=${msg}`, "_blank");
   };
 
   const contactItems = [
-    { icon: MapPin, label: locale === "ar" ? "العنوان" : "Adresse", value: locale === "ar" ? "الطالعة الكبيرة 42، فاس المرينية\nفاس 30000، المغرب" : "42 Talaa Kebira, Fès el-Bali\nFès 30000, Maroc", action: "https://maps.google.com/?q=Fes+Medina+Talaa+Kebira" },
-    { icon: Phone, label: locale === "ar" ? "الهاتف" : "Téléphone", value: "+212 6 44 69 08 61", action: "tel:+212644690861" },
-    { icon: MessageCircle, label: "WhatsApp", value: "+212 6 44 69 08 61", action: `https://wa.me/${WHATSAPP_NUMBER}` },
-    { icon: Mail, label: locale === "ar" ? "البريد الإلكتروني" : "Email", value: "contact@filali-adib.ma", action: "mailto:contact@filali-adib.ma" },
-    { icon: Clock, label: locale === "ar" ? "ساعات العمل" : "Horaires", value: locale === "ar" ? "السبت - الخميس: 9:00 - 19:00\nالأحد: مغلق" : "Sam - Jeu: 9h00 - 19h00\nDim: Fermé" },
+    { icon: MapPin, label: locale === "ar" ? "العنوان" : "Adresse", value: locale === "ar" ? STORE.address.ar : STORE.address.fr, action: "https://maps.google.com/?q=Fes+Medina+Talaa+Kebira" },
+    { icon: Phone, label: locale === "ar" ? "الهاتف" : "Téléphone", value: STORE.phone, action: `tel:${STORE.phoneRaw}` },
+    { icon: MessageCircle, label: "WhatsApp", value: STORE.phone, action: WHATSAPP_URL },
+    { icon: Mail, label: locale === "ar" ? "البريد الإلكتروني" : "Email", value: STORE.email, action: `mailto:${STORE.email}` },
+    { icon: Clock, label: locale === "ar" ? "ساعات العمل" : "Horaires", value: locale === "ar" ? STORE.hours.ar : STORE.hours.fr },
   ];
 
   return (
@@ -66,7 +65,7 @@ export default function ContactPage() {
           <span className="text-gray-700 font-medium">
             {locale === "ar" ? "هل تريد استشارة سريعة؟" : "Besoin d'un conseil rapide ?"}
           </span>
-          <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(locale === "ar" ? "مرحباً فيلالي عديب، أريد الاستفسار" : "Bonjour Filali Adib, je souhaite des informations")}`}
+          <a href={`${WHATSAPP_URL}?text=${encodeURIComponent(locale === "ar" ? "مرحباً فيلالي عديب، أريد الاستفسار" : "Bonjour Filali Adib, je souhaite des informations")}`}
             target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-green-700 transition-all shadow-md">
             {locale === "ar" ? "تواصل عبر واتساب" : "Contactez-nous"}

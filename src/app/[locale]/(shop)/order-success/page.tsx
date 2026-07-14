@@ -6,8 +6,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle, Package, ArrowLeft, MessageCircle, Truck, CreditCard, Phone, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { FadeIn } from "@/components/motion";
-
-const WHATSAPP_NUMBER = "212644690861";
+import { WHATSAPP_URL } from "@/lib/constants";
 
 export default function OrderSuccessPage() {
   const t = useTranslations("checkout");
@@ -16,8 +15,9 @@ export default function OrderSuccessPage() {
   const [orderNumber, setOrderNumber] = useState("");
 
   useEffect(() => {
-    const num = "FA-" + Date.now().toString(36).toUpperCase();
-    setOrderNumber(num);
+    const params = new URLSearchParams(window.location.search);
+    const num = params.get("order");
+    setOrderNumber(num || "FA-" + Date.now().toString(36).toUpperCase());
   }, []);
 
   const steps = [
@@ -124,7 +124,7 @@ export default function OrderSuccessPage() {
               <ArrowLeft size={18} className={locale === "ar" ? "rotate-180" : ""} />
               {locale === "ar" ? "متابعة التسوق" : "Continue Shopping"}
             </Link>
-            <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(locale === "ar" ? `مرحباً، لدي طلب برقم ${orderNumber}` : `Hello, I have order #${orderNumber}`)}`}
+            <a href={`${WHATSAPP_URL}?text=${encodeURIComponent(locale === "ar" ? `مرحباً، لدي طلب برقم ${orderNumber}` : `Hello, I have order #${orderNumber}`)}`}
               target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-green-700 transition-all shadow-md">
               <MessageCircle size={18} />

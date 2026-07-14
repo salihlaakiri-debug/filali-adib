@@ -4,8 +4,8 @@ import { auth } from "@/lib/auth";
 
 const defaults = {
   storeName: "Filali Adib - Artiste Joaillier",
-  storeEmail: "contact@filaliadib.com",
-  storePhone: "+212 522-123456",
+  storeEmail: "contact@filali-adib.ma",
+  storePhone: "+212 6 44 69 08 61",
   currency: "MAD",
   shippingLocal: 150,
   freeShippingAbove: 5000,

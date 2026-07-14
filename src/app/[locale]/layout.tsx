@@ -120,7 +120,7 @@ export default async function LocaleLayout({
                 postalCode: "30000",
               },
               telephone: "+212644690861",
-              email: "contact@filaliadib.com",
+              email: "contact@filali-adib.ma",
               priceRange: "$$$$",
               currenciesAccepted: "MAD",
               paymentAccepted: "Cash, Credit Card",
