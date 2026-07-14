@@ -30,34 +30,26 @@ export default function LoginPage() {
     if (searchParams.get("registered") === "true") {
       setSuccess(locale === "ar" ? "تم إنشاء الحساب بنجاح! سجل الدخول الآن" : "Account created! Please sign in");
     }
+    if (searchParams.get("error")) {
+      setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
+    }
   }, [searchParams, locale]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    try {
-      const identifier = mode === "email" ? formData.email.trim() : formData.phone.trim();
-      if (!identifier || !formData.password) {
-        setError(locale === "ar" ? "يرجى ملء جميع الحقول" : "Please fill in all fields");
-        setLoading(false);
-        return;
-      }
-      const result = await signIn("credentials", {
-        identifier,
-        password: formData.password,
-        redirect: false,
-      });
-      if (result?.error) {
-        setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
-        setLoading(false);
-        return;
-      }
-      router.push(L("/admin/dashboard"));
-    } catch {
-      setError(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
+    const identifier = mode === "email" ? formData.email.trim() : formData.phone.trim();
+    if (!identifier || !formData.password) {
+      setError(locale === "ar" ? "يرجى ملء جميع الحقول" : "Please fill in all fields");
       setLoading(false);
+      return;
     }
+    await signIn("credentials", {
+      identifier,
+      password: formData.password,
+      callbackUrl: L("/admin/dashboard"),
+    });
   };
 
   const t = (ar: string, fr: string) => locale === "ar" ? ar : fr;
