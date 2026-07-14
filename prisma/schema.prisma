@@ -17,7 +17,7 @@ model User {
   password      String?
   phone         String?   @unique
   role          String    @default("CUSTOMER") // CUSTOMER | ADMIN | SUPER_ADMIN
-  avatar        String?
+  image         String?
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
