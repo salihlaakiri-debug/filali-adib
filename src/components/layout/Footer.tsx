@@ -101,7 +101,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       href={L(link.href)}
-                      className="text-gray-400 hover:text-gold text-sm transition-all duration-300 hover:translate-x-1.5 inline-flex items-center gap-2 group"
+                      className="text-gray-400 hover:text-gold text-sm transition-all duration-300 inline-flex items-center gap-2 group"
                     >
                       <span className="w-0 h-[1px] bg-gold group-hover:w-2 transition-all duration-300" />
                       {link.label}
@@ -129,7 +129,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       href={L(link.href)}
-                      className="text-gray-400 hover:text-gold text-sm transition-all duration-300 hover:translate-x-1.5 inline-flex items-center gap-2 group"
+                      className="text-gray-400 hover:text-gold text-sm transition-all duration-300 inline-flex items-center gap-2 group"
                     >
                       <span className="w-0 h-[1px] bg-gold group-hover:w-2 transition-all duration-300" />
                       {link.label}

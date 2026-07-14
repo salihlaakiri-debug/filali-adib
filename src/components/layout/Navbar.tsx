@@ -4,38 +4,25 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { Menu, X, ShoppingBag, Search, User, Heart, LogIn, ChevronDown, Diamond, TrendingUp, TrendingDown } from "lucide-react";
+import { Menu, X, ShoppingBag, Search, User, Heart, LogIn, Diamond, TrendingUp, TrendingDown } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useSession } from "next-auth/react";
 import { FaLogo } from "@/components/icons";
 
-interface GoldPrice { price18k: number; currency: string; updatedAt: string; change?: number; changePercent?: number; }
+interface GoldPrice { price18k: number; change?: number; changePercent?: number; }
 
 export function Navbar() {
   const t = useTranslations();
   const locale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [goldPrice, setGoldPrice] = useState<GoldPrice | null>(null);
   const itemCount = useCartStore((s) => s.getItemCount());
   const { data: session } = useSession();
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const currentScrollY = latest;
-    if (currentScrollY < 50) {
-      setHidden(false);
-      setScrolled(false);
-    } else if (currentScrollY > lastScrollY && currentScrollY > 150) {
-      setHidden(true);
-      setIsOpen(false);
-    } else if (currentScrollY < lastScrollY) {
-      setHidden(false);
-    }
-    setScrolled(currentScrollY > 20);
-    setLastScrollY(currentScrollY);
+    setScrolled(latest > 30);
   });
 
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
@@ -43,7 +30,7 @@ export function Navbar() {
   useEffect(() => {
     fetch("/api/gold-price")
       .then((r) => r.json())
-      .then((d) => setGoldPrice({ price18k: d.price18k, currency: d.currency || "MAD", updatedAt: d.updatedAt, change: d.change, changePercent: d.changePercent }))
+      .then((d) => setGoldPrice({ price18k: d.price18k, change: d.change, changePercent: d.changePercent }))
       .catch(() => {});
   }, []);
 
@@ -55,34 +42,28 @@ export function Navbar() {
   ];
 
   return (
-    <motion.nav
-      initial={{ y: -80 }}
-      animate={{ y: hidden ? -80 : 0 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.4, 0.25, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-secondary/95 backdrop-blur-xl shadow-2xl shadow-black/30 border-b border-gold/10 py-1"
-          : "bg-secondary/90 backdrop-blur-sm border-b border-gold/15 py-0"
+          ? "bg-secondary/98 backdrop-blur-xl shadow-2xl shadow-black/20"
+          : "bg-secondary/95 backdrop-blur-sm shadow-lg shadow-black/10"
       }`}
     >
-      {/* Gold Price Strip */}
-      {goldPrice && (
-        <div className="bg-secondary border-b border-gold/10">
+      {/* Gold Price Strip - collapses on scroll */}
+      <div
+        className={`overflow-hidden transition-all duration-300 border-b border-gold/10 ${
+          scrolled ? "max-h-0 border-b-0" : "max-h-10"
+        }`}
+      >
+        {goldPrice && (
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-center gap-3 py-1.5 text-xs">
               <Diamond size={10} className="text-gold/60" />
-              <span className="text-gold/80 font-medium">سعر الذهب</span>
-              <span className="text-gray-600">|</span>
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={goldPrice.price18k}
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-gold font-bold"
-                >
-                  {goldPrice.price18k.toLocaleString()} د.م/غ
-                </motion.span>
-              </AnimatePresence>
+              <span className="text-gold/80 font-medium hidden sm:inline">سعر الذهب</span>
+              <span className="text-gray-600 hidden sm:inline">|</span>
+              <span className="text-gold font-bold">
+                {goldPrice.price18k.toLocaleString()} د.م/غ
+              </span>
               <span className="text-gray-600">|</span>
               <span className="text-gray-500">عيار 18</span>
               {goldPrice.change !== undefined && goldPrice.change !== 0 && (
@@ -93,14 +74,14 @@ export function Navbar() {
               )}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Top gold accent line */}
-      <div className="h-[1px] bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-
+      {/* Main nav bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className={`flex items-center justify-between transition-all duration-300 ${
+          scrolled ? "h-14" : "h-16"
+        }`}>
           {/* Logo */}
           <Link href={L("/")} className="flex items-center gap-2.5 group relative">
             <motion.div
@@ -108,17 +89,21 @@ export function Navbar() {
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
               className="relative"
             >
-              <FaLogo size={30} className="text-gold" />
+              <FaLogo size={scrolled ? 26 : 30} className="text-gold transition-all duration-300" />
               <motion.div
                 className="absolute inset-0 bg-gold/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                 style={{ scale: 1.5 }}
               />
             </motion.div>
             <div className="flex flex-col">
-              <span className="font-playfair text-gold font-bold tracking-wider text-sm">
+              <span className={`font-playfair text-gold font-bold tracking-wider transition-all duration-300 ${
+                scrolled ? "text-xs" : "text-sm"
+              }`}>
                 FILALI ADIB
               </span>
-              <span className="text-gold-light/60 text-[10px] tracking-[3px]">
+              <span className={`text-gold-light/60 tracking-[3px] transition-all duration-300 ${
+                scrolled ? "text-[8px] hidden" : "text-[10px]"
+              }`}>
                 ARTISTE JOAILLIER
               </span>
             </div>
@@ -134,56 +119,37 @@ export function Navbar() {
               >
                 {link.label}
                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-gold transition-all duration-300 group-hover:w-3/4 rounded-full" />
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[6px] bg-gold/10 transition-all duration-300 group-hover:w-3/4 rounded-full blur-sm" />
               </Link>
             ))}
           </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-1">
-            {[
-              {
-                icon: <Search size={18} />,
-                label: "search",
-                href: undefined,
-                onClick: () => {},
-                show: true,
-              },
-              {
-                icon: <Heart size={18} />,
-                label: "favorites",
-                href: L("/favorites"),
-                onClick: undefined,
-                show: true,
-                desktop: true,
-              },
-              {
-                icon: <User size={18} />,
-                label: session ? "account" : "login",
-                href: L(session ? "/account" : "/login"),
-                onClick: undefined,
-                show: true,
-                desktop: true,
-              },
-            ].map((action) => (
-              <motion.button
-                key={action.label}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={action.onClick}
-                className={`text-white/70 hover:text-gold transition-all duration-300 relative p-2 rounded-full hover:bg-gold/5 ${
-                  action.desktop ? "hidden sm:block" : ""
-                }`}
-              >
-                {action.href ? (
-                  <Link href={action.href} className="flex items-center justify-center">
-                    {action.icon}
-                  </Link>
-                ) : (
-                  action.icon
-                )}
-              </motion.button>
-            ))}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-white/70 hover:text-gold transition-all duration-300 relative p-2 rounded-full hover:bg-gold/5"
+            >
+              <Search size={18} />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-white/70 hover:text-gold transition-all duration-300 relative p-2 rounded-full hover:bg-gold/5 hidden sm:block"
+            >
+              <Link href={L("/favorites")} className="flex items-center justify-center">
+                <Heart size={18} />
+              </Link>
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-white/70 hover:text-gold transition-all duration-300 relative p-2 rounded-full hover:bg-gold/5 hidden sm:block"
+            >
+              <Link href={L(session ? "/account" : "/login")} className="flex items-center justify-center">
+                <User size={18} />
+              </Link>
+            </motion.button>
 
             {/* Cart with badge */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="relative">
@@ -312,6 +278,6 @@ export function Navbar() {
           )}
         </AnimatePresence>
       </div>
-    </motion.nav>
+    </nav>
   );
 }

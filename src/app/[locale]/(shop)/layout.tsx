@@ -11,7 +11,7 @@ export default function ShopLayout({
   return (
     <>
       <Navbar />
-      <main className="flex-1 pt-[96px]">
+      <main className="flex-1 pt-[80px]">
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />

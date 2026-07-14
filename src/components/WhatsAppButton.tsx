@@ -10,7 +10,7 @@ export function WhatsAppButton() {
       href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("مرحباً فيلالي عديب، أريد الاستفسار")}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 left-6 z-50 bg-green-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-700 transition-colors"
+      className="fixed bottom-6 left-6 z-40 bg-green-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-700 transition-colors"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", delay: 1, stiffness: 200 }}

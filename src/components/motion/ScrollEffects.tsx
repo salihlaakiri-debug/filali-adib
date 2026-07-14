@@ -34,7 +34,7 @@ export function ScrollToTop() {
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
           transition={{ duration: 0.3, ease: [0.25, 0.4, 0.25, 1] }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-secondary text-gold rounded-full shadow-xl flex items-center justify-center hover:bg-secondary/90 transition-colors border border-gold/20"
+          className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-secondary text-gold rounded-full shadow-xl flex items-center justify-center hover:bg-secondary/90 transition-colors border border-gold/20"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
