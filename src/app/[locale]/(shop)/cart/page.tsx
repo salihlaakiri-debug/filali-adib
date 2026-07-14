@@ -14,31 +14,31 @@ export default function CartPage() {
   const t = useTranslations("cart");
   const locale = useLocale();
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
-  const { items, removeItem, updateQuantity, getSubtotal, getShipping, getTax, getTotal } = useCartStore();
-  const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState(0);
+  const { items, removeItem, updateQuantity, getSubtotal, getShipping, getTax, getTotal, coupon, setCoupon, getDiscount, getFinalTotal } = useCartStore();
+  const [couponInput, setCouponInput] = useState(coupon?.code || "");
   const [couponLoading, setCouponLoading] = useState(false);
   const { addToast } = useToast();
 
   const subtotal = getSubtotal();
   const shipping = getShipping();
   const tax = getTax();
-  const total = getTotal() - discount;
+  const discount = getDiscount();
+  const total = getFinalTotal();
 
   const applyCoupon = async () => {
-    if (!coupon.trim()) { addToast(locale === "ar" ? "أدخل كود الكوبون" : "Enter coupon code"); return; }
+    if (!couponInput.trim()) { addToast(locale === "ar" ? "أدخل كود الكوبون" : "Enter coupon code"); return; }
     setCouponLoading(true);
     try {
       const res = await fetch("/api/coupons/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: coupon, subtotal }),
+        body: JSON.stringify({ code: couponInput, subtotal }),
       });
       const data = await res.json();
-      if (!res.ok) { addToast(data.error || (locale === "ar" ? "كود غير صحيح" : "Invalid code")); setDiscount(0); return; }
-      setDiscount(data.discount);
+      if (!res.ok) { addToast(data.error || (locale === "ar" ? "كود غير صحيح" : "Invalid code")); setCoupon(null); return; }
+      setCoupon({ code: couponInput.toUpperCase(), couponId: data.coupon.id, discount: data.discount });
       addToast(locale === "ar" ? `تم تطبيق الكوبون - خصم ${data.discount.toLocaleString()} د.م` : `Coupon applied - ${data.discount.toLocaleString()} MAD off`);
-    } catch { addToast(locale === "ar" ? "حدث خطأ" : "Error occurred"); setDiscount(0); } finally { setCouponLoading(false); }
+    } catch { addToast(locale === "ar" ? "حدث خطأ" : "Error occurred"); setCoupon(null); } finally { setCouponLoading(false); }
   };
 
   if (items.length === 0) {
@@ -169,7 +169,7 @@ export default function CartPage() {
                   <div className="flex gap-2">
                     <div className="flex-1 relative">
                       <Tag size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input type="text" placeholder={t("coupon")} value={coupon} onChange={(e) => setCoupon(e.target.value)}
+                      <input type="text" placeholder={t("coupon")} value={couponInput} onChange={(e) => setCouponInput(e.target.value)}
                         className="w-full ps-10 pe-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 text-sm transition-all bg-gray-50 focus:bg-white" />
                     </div>
                     <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}

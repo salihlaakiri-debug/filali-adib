@@ -13,16 +13,26 @@ export interface CartItem {
   stock: number;
 }
 
+export interface CartCoupon {
+  code: string;
+  couponId: string;
+  discount: number;
+}
+
 interface CartStore {
   items: CartItem[];
+  coupon: CartCoupon | null;
   addItem: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  setCoupon: (coupon: CartCoupon | null) => void;
   clearCart: () => void;
   getSubtotal: () => number;
   getShipping: () => number;
   getTax: () => number;
   getTotal: () => number;
+  getDiscount: () => number;
+  getFinalTotal: () => number;
   getItemCount: () => number;
 }
 
@@ -30,6 +40,7 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      coupon: null,
 
       addItem: (item, quantity = 1) => {
         set((state) => {
@@ -62,7 +73,9 @@ export const useCartStore = create<CartStore>()(
         }));
       },
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], coupon: null }),
+
+      setCoupon: (coupon) => set({ coupon }),
 
       getSubtotal: () => {
         return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -79,6 +92,14 @@ export const useCartStore = create<CartStore>()(
 
       getTotal: () => {
         return get().getSubtotal() + get().getShipping() + get().getTax();
+      },
+
+      getDiscount: () => {
+        return get().coupon?.discount || 0;
+      },
+
+      getFinalTotal: () => {
+        return Math.max(0, get().getTotal() - get().getDiscount());
       },
 
       getItemCount: () => {

@@ -18,7 +18,7 @@ export default function CheckoutPage() {
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { items, getSubtotal, getShipping, getTax, getTotal, clearCart } = useCartStore();
+  const { items, getSubtotal, getShipping, getTax, getTotal, getDiscount, getFinalTotal, coupon, clearCart } = useCartStore();
   const { addToast } = useToast();
   const [step, setStep] = useState<CheckoutStep>("shipping");
   const [loading, setLoading] = useState(false);
@@ -62,6 +62,9 @@ export default function CheckoutPage() {
             phone: shippingData.phone,
           },
           paymentMethod,
+          couponCode: coupon?.code || null,
+          couponId: coupon?.couponId || null,
+          discount: coupon?.discount || 0,
         }),
       });
       const data = await res.json();
@@ -346,9 +349,15 @@ export default function CheckoutPage() {
                   <span className="text-gray-500">{locale === "ar" ? "الضريبة" : "Tax"}</span>
                   <span>{getTax().toLocaleString()} د.م</span>
                 </div>
+                {getDiscount() > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>{locale === "ar" ? "خصم الكوبون" : "Coupon Discount"} ({coupon?.code})</span>
+                    <span className="font-medium">-{getDiscount().toLocaleString()} د.م</span>
+                  </div>
+                )}
                 <div className="border-t border-gray-100 pt-3 flex justify-between items-center">
                   <span className="font-semibold text-secondary">{locale === "ar" ? "المجموع" : "Total"}</span>
-                  <span className="font-bold text-gold text-xl">{getTotal().toLocaleString()} د.م</span>
+                  <span className="font-bold text-gold text-xl">{getFinalTotal().toLocaleString()} د.م</span>
                 </div>
               </div>
 

@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { items, shippingAddress, paymentMethod } = body;
+    const { items, shippingAddress, paymentMethod, couponId, discount } = body;
 
     if (!items || items.length === 0) {
       return NextResponse.json(
@@ -126,7 +126,34 @@ export async function POST(request: Request) {
     // Add shipping
     const shipping = total >= 5000 ? 0 : 150;
     const tax = Math.round(total * 0.2);
-    const finalTotal = total + shipping + tax;
+
+    // Validate and apply coupon discount server-side
+    let appliedDiscount = 0;
+    let validatedCouponId: string | null = null;
+
+    if (couponId && discount > 0) {
+      const coupon = await db.coupon.findUnique({ where: { id: couponId } });
+      if (coupon && coupon.isActive) {
+        const now = new Date();
+        const withinDateRange = (!coupon.startsAt || now >= coupon.startsAt) && (!coupon.expiresAt || now <= coupon.expiresAt);
+        const withinUsageLimit = !coupon.usageLimit || coupon.usedCount < coupon.usageLimit;
+        const meetsMinPurchase = !coupon.minPurchase || total >= coupon.minPurchase;
+
+        if (withinDateRange && withinUsageLimit && meetsMinPurchase) {
+          if (coupon.discountType === "PERCENTAGE") {
+            appliedDiscount = Math.round(total * (coupon.discountValue / 100));
+            if (coupon.maxDiscount && appliedDiscount > coupon.maxDiscount) {
+              appliedDiscount = coupon.maxDiscount;
+            }
+          } else {
+            appliedDiscount = coupon.discountValue;
+          }
+          validatedCouponId = coupon.id;
+        }
+      }
+    }
+
+    const finalTotal = Math.max(0, total + shipping + tax - appliedDiscount);
 
     // Generate order number
     const orderNumber = `ORD-${Date.now()}`;
@@ -157,10 +184,12 @@ export async function POST(request: Request) {
           subtotal: total,
           shippingCost: shipping,
           tax,
+          discount: appliedDiscount,
           total: finalTotal,
           currency: "MAD",
           status: "PENDING",
           shippingAddressId: addressId,
+          couponId: validatedCouponId,
           items: {
             create: orderItems,
           },
@@ -174,6 +203,13 @@ export async function POST(request: Request) {
         await tx.product.update({
           where: { id: item.productId },
           data: { stock: { decrement: item.quantity } },
+        });
+      }
+
+      if (validatedCouponId) {
+        await tx.coupon.update({
+          where: { id: validatedCouponId },
+          data: { usedCount: { increment: 1 } },
         });
       }
 
