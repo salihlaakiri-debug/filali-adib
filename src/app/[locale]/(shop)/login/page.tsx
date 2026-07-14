@@ -52,7 +52,7 @@ export default function LoginPage() {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
         return;
       }
-      window.location.href = "/";
+      window.location.href = L("/");
     } catch {
       setError(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
     } finally {

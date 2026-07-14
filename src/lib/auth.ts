@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
@@ -25,7 +24,6 @@ declare module "next-auth" {
 const googleConfigured = !!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: googleConfigured && db ? PrismaAdapter(db) : undefined,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
