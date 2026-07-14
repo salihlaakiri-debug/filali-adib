@@ -2,6 +2,30 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
+export async function GET() {
+  try {
+    if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ user });
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  }
+}
+
 export async function PUT(request: Request) {
   try {
     if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });

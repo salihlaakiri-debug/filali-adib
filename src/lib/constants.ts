@@ -19,6 +19,7 @@ export const STORE = {
   social: {
     facebook: "https://www.facebook.com/filaliadib",
     instagram: "https://www.instagram.com/filaliadib",
+    whatsapp: "https://wa.me/212644690861",
   },
 } as const;
 

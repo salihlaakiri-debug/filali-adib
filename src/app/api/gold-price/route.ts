@@ -14,9 +14,9 @@ export async function GET() {
         price18k = goldPrice.price;
       }
     }
-    } catch (e) {
-      console.warn("Metals API fallback:", (e as Error).message);
-    }
+  } catch (e) {
+    console.warn("Gold price DB read failed:", (e as Error).message);
+  }
 
   if (process.env.METALS_API_KEY) {
     try {
@@ -31,9 +31,9 @@ export async function GET() {
           price18k = Math.round(price24k * 0.75);
         }
       }
-  } catch (e) {
-    console.warn("Gold price DB fallback:", (e as Error).message);
-  }
+    } catch (e) {
+      console.warn("Gold price API failed:", (e as Error).message);
+    }
   }
 
   return NextResponse.json({

@@ -2,9 +2,31 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
+
+    const url = new URL(request.url);
+    const number = url.searchParams.get("number");
+
+    if (number) {
+      const order = await db.order.findUnique({
+        where: { orderNumber: number },
+        select: {
+          orderNumber: true,
+          status: true,
+          createdAt: true,
+          total: true,
+        },
+      });
+
+      if (!order) {
+        return NextResponse.json({ error: "Order not found" }, { status: 404 });
+      }
+
+      return NextResponse.json({ order });
+    }
+
     const session = await auth();
 
     if (!session) {
@@ -51,9 +73,24 @@ export async function POST(request: Request) {
       );
     }
 
+    for (const item of items) {
+      if (!item.productId || typeof item.productId !== "string" || item.productId.trim() === "") {
+        return NextResponse.json(
+          { error: "Each item must have a valid productId" },
+          { status: 400 }
+        );
+      }
+      if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
+        return NextResponse.json(
+          { error: "Each item must have a positive integer quantity" },
+          { status: 400 }
+        );
+      }
+    }
+
     // Calculate total
     let total = 0;
-    const orderItems = [];
+    const orderItems: { productId: string; quantity: number; price: any; weight: number; total: number }[] = [];
 
     for (const item of items) {
       const product = await db.product.findUnique({
@@ -91,56 +128,57 @@ export async function POST(request: Request) {
     const tax = Math.round(total * 0.2);
     const finalTotal = total + shipping + tax;
 
-    // Create or find shipping address
-    let addressId: string | undefined;
-
-    if (shippingAddress) {
-      const address = await db.address.create({
-        data: {
-          firstName: shippingAddress.firstName,
-          lastName: shippingAddress.lastName,
-          address1: shippingAddress.address,
-          city: shippingAddress.city,
-          country: shippingAddress.country || "Morocco",
-          postalCode: shippingAddress.postalCode || "00000",
-          phone: shippingAddress.phone || "",
-          userId: session.user!.id,
-        },
-      });
-      addressId = address.id;
-    }
-
     // Generate order number
     const orderNumber = `ORD-${Date.now()}`;
 
-    // Create order
-    const order = await db.order.create({
-      data: {
-        orderNumber,
-        userId: session.user!.id,
-        subtotal: total,
-        shippingCost: shipping,
-        tax,
-        total: finalTotal,
-        currency: "MAD",
-        status: "PENDING",
-        shippingAddressId: addressId,
-        items: {
-          create: orderItems,
-        },
-      },
-      include: {
-        items: true,
-      },
-    });
+    const order = await db.$transaction(async (tx) => {
+      let addressId: string | undefined;
 
-    // Update stock
-    for (const item of items) {
-      await db.product.update({
-        where: { id: item.productId },
-        data: { stock: { decrement: item.quantity } },
+      if (shippingAddress) {
+        const address = await tx.address.create({
+          data: {
+            firstName: shippingAddress.firstName,
+            lastName: shippingAddress.lastName,
+            address1: shippingAddress.address,
+            city: shippingAddress.city,
+            country: shippingAddress.country || "Morocco",
+            postalCode: shippingAddress.postalCode || "00000",
+            phone: shippingAddress.phone || "",
+            userId: session.user!.id,
+          },
+        });
+        addressId = address.id;
+      }
+
+      const createdOrder = await tx.order.create({
+        data: {
+          orderNumber,
+          userId: session.user!.id,
+          subtotal: total,
+          shippingCost: shipping,
+          tax,
+          total: finalTotal,
+          currency: "MAD",
+          status: "PENDING",
+          shippingAddressId: addressId,
+          items: {
+            create: orderItems,
+          },
+        },
+        include: {
+          items: true,
+        },
       });
-    }
+
+      for (const item of items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        });
+      }
+
+      return createdOrder;
+    });
 
     return NextResponse.json({ order }, { status: 201 });
   } catch (error) {
