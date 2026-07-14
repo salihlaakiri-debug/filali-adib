@@ -37,25 +37,23 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const identifier = mode === "email" ? formData.email : formData.phone;
+      const identifier = mode === "email" ? formData.email.trim() : formData.phone.trim();
+      if (!identifier || !formData.password) {
+        setError(locale === "ar" ? "يرجى ملء جميع الحقول" : "Please fill in all fields");
+        setLoading(false);
+        return;
+      }
       const result = await signIn("credentials", {
         identifier,
         password: formData.password,
         redirect: false,
+        callbackUrl: L("/"),
       });
       if (result?.error) {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
         return;
       }
-      const sessionRes = await fetch("/api/auth/session");
-      const sessionData = await sessionRes.json();
-      const role = sessionData?.user?.role;
-      if (role === "ADMIN" || role === "SUPER_ADMIN") {
-        router.push(L("/admin/dashboard"));
-      } else {
-        router.push(L("/"));
-      }
-      router.refresh();
+      window.location.href = result?.url || L("/");
     } catch {
       setError(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
     } finally {
