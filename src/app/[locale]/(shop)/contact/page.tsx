@@ -19,21 +19,25 @@ export default function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    addToast("تم إرسال رسالتك بنجاح");
+    addToast(locale === "ar" ? "تم إرسال رسالتك بنجاح" : "Message sent successfully");
     setTimeout(() => setSubmitted(false), 3000);
   };
 
   const handleWhatsApp = () => {
-    const msg = encodeURIComponent(`مرحباً فيلالي عديب، أريد الاستفسار عن:\n\nالاسم: ${formData.name || "غير محدد"}\nالموضوع: ${formData.subject || "عام"}\nالرسالة: ${formData.message || "لم تُذكر"}`);
+    const msg = encodeURIComponent(
+      locale === "ar"
+        ? `مرحباً فيلالي عديب، أريد الاستفسار عن:\n\nالاسم: ${formData.name || "غير محدد"}\nالموضوع: ${formData.subject || "عام"}\nالرسالة: ${formData.message || "لم تُذكر"}`
+        : `Bonjour Filali Adib, je souhaite des informations:\n\nNom: ${formData.name || "Non précisé"}\nSujet: ${formData.subject || "Général"}\nMessage: ${formData.message || "Non mentionné"}`
+    );
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
   };
 
   const contactItems = [
-    { icon: MapPin, label: t("info.address"), value: "الطالعة الكبيرة 42، فاس المرينية\nفاس 30000، المغرب", action: "https://maps.google.com/?q=Fes+Medina+Talaa+Kebira" },
-    { icon: Phone, label: t("info.phone"), value: "+212 6 44 69 08 61", action: "tel:+212644690861" },
-    { icon: MessageCircle, label: "واتساب", value: "+212 6 44 69 08 61", action: `https://wa.me/${WHATSAPP_NUMBER}` },
-    { icon: Mail, label: t("info.email"), value: "contact@filaliadib.com", action: "mailto:contact@filaliadib.com" },
-    { icon: Clock, label: t("info.hours"), value: "الاثنين - السبت: 9:30 - 20:00\nالأحد: 10:00 - 14:00" },
+    { icon: MapPin, label: locale === "ar" ? "العنوان" : "Adresse", value: locale === "ar" ? "الطالعة الكبيرة 42، فاس المرينية\nفاس 30000، المغرب" : "42 Talaa Kebira, Fès el-Bali\nFès 30000, Maroc", action: "https://maps.google.com/?q=Fes+Medina+Talaa+Kebira" },
+    { icon: Phone, label: locale === "ar" ? "الهاتف" : "Téléphone", value: "+212 6 44 69 08 61", action: "tel:+212644690861" },
+    { icon: MessageCircle, label: "WhatsApp", value: "+212 6 44 69 08 61", action: `https://wa.me/${WHATSAPP_NUMBER}` },
+    { icon: Mail, label: locale === "ar" ? "البريد الإلكتروني" : "Email", value: "contact@filali-adib.ma", action: "mailto:contact@filali-adib.ma" },
+    { icon: Clock, label: locale === "ar" ? "ساعات العمل" : "Horaires", value: locale === "ar" ? "السبت - الخميس: 9:00 - 19:00\nالأحد: مغلق" : "Sam - Jeu: 9h00 - 19h00\nDim: Fermé" },
   ];
 
   return (
@@ -48,20 +52,24 @@ export default function ContactPage() {
             <h1 className="font-playfair text-4xl font-bold mb-4">{t("title")}</h1>
           </TextReveal>
           <FadeIn direction="up" delay={0.4}>
-            <p className="text-gray-300 max-w-2xl mx-auto">نحن هنا لمساعدتك. لا تتردد في التواصل معنا عبر أي قناة تفضلها</p>
+            <p className="text-gray-300 max-w-2xl mx-auto">
+              {locale === "ar" ? "نحن هنا لمساعدتك. لا تتردد في التواصل معنا عبر أي قناة تفضلها" : "Nous sommes là pour vous aider. N'hésitez pas à nous contacter"}
+            </p>
           </FadeIn>
         </div>
       </section>
 
       {/* Quick WhatsApp CTA */}
-      <section className="bg-gold/5 py-6 border-b border-gold/10">
+      <section className="bg-green-50 py-5 border-b border-green-100">
         <div className="container mx-auto px-4 flex flex-wrap items-center justify-center gap-4">
           <MessageCircle className="text-green-600" size={20} />
-          <span className="text-gray-700 font-medium">هل تريد استشارة سريعة؟</span>
-          <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("مرحباً فيلالي عديب، أريد الاستفسار")}`}
+          <span className="text-gray-700 font-medium">
+            {locale === "ar" ? "هل تريد استشارة سريعة؟" : "Besoin d'un conseil rapide ?"}
+          </span>
+          <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(locale === "ar" ? "مرحباً فيلالي عديب، أريد الاستفسار" : "Bonjour Filali Adib, je souhaite des informations")}`}
             target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-green-700 transition-all shadow-md">
-            تواصل عبر واتساب
+            {locale === "ar" ? "تواصل عبر واتساب" : "Contactez-nous"}
           </a>
         </div>
       </section>
@@ -77,18 +85,18 @@ export default function ContactPage() {
                   <StaggerItem key={i}>
                     <motion.div whileHover={{ x: 4 }} className="flex items-start gap-4">
                       <motion.div whileHover={{ rotate: 15, scale: 1.1 }}
-                        className="w-11 h-11 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        className="w-11 h-11 bg-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
                         <item.icon className="text-gold" size={18} />
                       </motion.div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-secondary mb-1 text-sm">{item.label}</h3>
                         {item.action ? (
                           <a href={item.action} target="_blank" rel="noopener noreferrer"
-                            className="text-gray-600 whitespace-pre-line hover:text-gold transition-colors text-sm">
+                            className="text-gray-500 whitespace-pre-line hover:text-gold transition-colors text-sm">
                             {item.value}
                           </a>
                         ) : (
-                          <p className="text-gray-600 whitespace-pre-line text-sm">{item.value}</p>
+                          <p className="text-gray-500 whitespace-pre-line text-sm">{item.value}</p>
                         )}
                       </div>
                     </motion.div>
@@ -97,11 +105,11 @@ export default function ContactPage() {
 
                 {/* Map */}
                 <StaggerItem>
-                  <div className="bg-gray-100 rounded-xl overflow-hidden h-56 mt-4">
+                  <div className="bg-gray-100 rounded-2xl overflow-hidden h-56 mt-4">
                     <iframe
                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3323.836!2d-4.9997!3d34.0614!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDAzJzQxLjAiTiA0wrAwMCcwMC4wIlc!5e0!3m2!1sar!2sma!4v1700000000000!5m2!1sar!2sma"
                       width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade" title="موقع فيلالي عديب - فاس" />
+                      referrerPolicy="no-referrer-when-downgrade" title="Filali Adib - Fès" />
                   </div>
                 </StaggerItem>
               </StaggerContainer>
@@ -111,43 +119,48 @@ export default function ContactPage() {
             <FadeIn direction="left" delay={0.3}>
               <div className="lg:col-span-3">
                 <motion.form onSubmit={handleSubmit}
-                  className="bg-white rounded-2xl shadow-sm p-8 hover:shadow-md transition-shadow">
-                  <h2 className="font-playfair text-2xl font-bold text-secondary mb-2">أرسل لنا رسالة</h2>
-                  <p className="text-gray-500 text-sm mb-6">أو تواصل معنا مباشرة عبر واتساب</p>
+                  className="bg-white rounded-2xl shadow-sm p-8 hover:shadow-md transition-shadow border border-gray-50">
+                  <h2 className="font-playfair text-2xl font-bold text-secondary mb-2">
+                    {locale === "ar" ? "أرسل لنا رسالة" : "Envoyez-nous un message"}
+                  </h2>
+                  <p className="text-gray-500 text-sm mb-6">
+                    {locale === "ar" ? "أو تواصل معنا مباشرة عبر واتساب" : "Ou contactez-nous directement via WhatsApp"}
+                  </p>
 
-                  <div className="grid md:grid-cols-2 gap-5 mb-5">
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("name")}</label>
                       <input type="text" required value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-gray-50 focus:bg-white" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("email")}</label>
                       <input type="email" required value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-gray-50 focus:bg-white" />
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-5 mb-5">
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم الهاتف</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        {locale === "ar" ? "رقم الهاتف" : "Téléphone"}
+                      </label>
                       <input type="tel" value={formData.phone} dir="ltr" placeholder="+212 6XX-XXXXXX"
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all text-left" />
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-gray-50 focus:bg-white" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("subject")}</label>
                       <select value={formData.subject} required
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-white">
-                        <option value="">اختر الموضوع</option>
-                        <option value="purchase">استفسار عن منتج</option>
-                        <option value="price">استفسار عن الأسعار</option>
-                        <option value="custom">طلب تصميم خاص</option>
-                        <option value="complaint">شكوى</option>
-                        <option value="other">أخرى</option>
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-gray-50 focus:bg-white">
+                        <option value="">{locale === "ar" ? "اختر الموضوع" : "Choisir le sujet"}</option>
+                        <option value="purchase">{locale === "ar" ? "استفسار عن منتج" : "Demande produit"}</option>
+                        <option value="price">{locale === "ar" ? "استفسار عن الأسعار" : "Demande prix"}</option>
+                        <option value="custom">{locale === "ar" ? "طلب تصميم خاص" : "Commande spéciale"}</option>
+                        <option value="other">{locale === "ar" ? "أخرى" : "Autre"}</option>
                       </select>
                     </div>
                   </div>
@@ -156,18 +169,18 @@ export default function ContactPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("message")}</label>
                     <textarea rows={4} required value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 resize-none transition-all"
-                      placeholder="اكتب رسالتك هنا..." />
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 resize-none transition-all bg-gray-50 focus:bg-white"
+                      placeholder={locale === "ar" ? "اكتب رسالتك هنا..." : "Votre message..."} />
                   </div>
 
                   <div className="flex gap-3">
-                    <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                      className="flex-1 bg-gold text-secondary px-6 py-3 rounded-lg font-semibold hover:bg-gold-dark transition-all flex items-center justify-center gap-2 shadow-lg shadow-gold/20 hover:shadow-gold/40">
-                      {submitted ? <><CheckCircle size={18} /> تم الإرسال</> : <><Send size={18} /> {t("submit")}</>}
+                    <motion.button type="submit" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+                      className="flex-1 bg-gold text-secondary px-6 py-3.5 rounded-xl font-semibold hover:bg-gold-dark transition-all flex items-center justify-center gap-2 shadow-lg shadow-gold/20 hover:shadow-gold/40">
+                      {submitted ? <><CheckCircle size={18} /> {locale === "ar" ? "تم الإرسال" : "Envoyé"}</> : <><Send size={18} /> {t("submit")}</>}
                     </motion.button>
-                    <motion.button type="button" onClick={handleWhatsApp} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                      className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-all flex items-center justify-center gap-2 shadow-md">
-                      <MessageCircle size={18} /> واتساب
+                    <motion.button type="button" onClick={handleWhatsApp} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+                      className="bg-green-600 text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-green-700 transition-all flex items-center justify-center gap-2 shadow-md">
+                      <MessageCircle size={18} /> WhatsApp
                     </motion.button>
                   </div>
                 </motion.form>
