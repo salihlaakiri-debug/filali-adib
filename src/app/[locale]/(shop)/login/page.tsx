@@ -33,14 +33,7 @@ export default function LoginPage() {
         setError(locale === "ar" ? "البريد الإلكتروني أو كلمة المرور غير صحيحة" : locale === "fr" ? "Email ou mot de passe incorrect" : "Invalid email or password");
         return;
       }
-      const sessionRes = await fetch("/api/auth/session");
-      const sessionData = await sessionRes.json();
-      const role = sessionData?.user?.role;
-      if (role === "ADMIN" || role === "SUPER_ADMIN") {
-        router.push(L("/admin/dashboard"));
-      } else {
-        router.push(L("/"));
-      }
+      router.push(L("/"));
       router.refresh();
     } catch {
       setError(locale === "ar" ? "حدث خطأ في الاتصال بالخادم" : "Server connection error");
