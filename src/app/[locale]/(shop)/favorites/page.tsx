@@ -56,14 +56,14 @@ export default function FavoritesPage() {
         body: JSON.stringify({ productId }),
       });
       setFavorites((prev) => prev.filter((f) => f.productId !== productId));
-      addToast("تمت الإزالة من المفضلة");
-    } catch { addToast("حدث خطأ"); }
+      addToast(locale === "ar" ? "تمت الإزالة من المفضلة" : "Removed from favorites");
+    } catch { addToast(locale === "ar" ? "حدث خطأ" : "Error occurred"); }
   };
 
   const handleAddToCart = (product: FavoriteProduct["product"]) => {
     const karatNum = parseInt(product.karat.replace("K", ""));
     addItem({ id: product.id, name: product.name, slug: product.slug, price: product.calculatedPrice, weight: product.weight, karat: karatNum, stock: product.stock });
-    addToast(`${product.name} تمت الإضافة للسلة`);
+    addToast(locale === "ar" ? `${product.name} تمت الإضافة للسلة` : `${product.name} added to cart`);
   };
 
   if (status === "loading" || loading) {
@@ -75,29 +75,46 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="bg-light min-h-[60vh] py-12">
-      <div className="container mx-auto px-4">
-        <motion.h1 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-          className="font-playfair text-3xl font-bold text-secondary mb-8">
-          المفضلة <span className="text-gold text-lg">({favorites.length})</span>
-        </motion.h1>
+    <div className="bg-light min-h-[70vh] py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+          <h1 className="font-playfair text-3xl font-bold text-secondary">
+            {locale === "ar" ? "المفضلة" : "Favorites"}{" "}
+            <span className="text-gold text-lg">({favorites.length})</span>
+          </h1>
+          <p className="text-gray-500 mt-1">
+            {locale === "ar" ? "المنتجات التي أضفتها للمفضلة" : "Products you've added to favorites"}
+          </p>
+        </motion.div>
 
         {favorites.length === 0 ? (
           <FadeIn>
-            <div className="text-center py-16">
-              <Heart size={64} className="text-gray-200 mx-auto mb-4" />
-              <p className="text-gray-500 mb-4 text-lg">لم تضف أي منتجات بعد</p>
+            <div className="text-center py-20">
+              <motion.div
+                animate={{ y: [0, -12, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="w-28 h-28 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <Heart size={48} className="text-pink-300" />
+              </motion.div>
+              <h2 className="text-xl font-semibold text-secondary mb-2">
+                {locale === "ar" ? "المفضلة فارغة" : "No Favorites Yet"}
+              </h2>
+              <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                {locale === "ar" ? "لم تضف أي منتجات بعد. تصفح منتجاتنا وأضف ما يعجبك" : "You haven't added any favorites yet. Browse our products and add what you like"}
+              </p>
               <Link href={L("/products")}
-                className="inline-flex items-center gap-2 bg-gold text-secondary px-6 py-3 rounded-lg font-semibold hover:bg-gold-dark transition-all">
-                <ShoppingBag size={18} /> تصفح المنتجات
+                className="inline-flex items-center gap-2 bg-gold text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-gold-dark transition-all shadow-lg shadow-gold/20 hover:shadow-gold/40">
+                <ShoppingBag size={18} />
+                {locale === "ar" ? "تصفح المنتجات" : "Browse Products"}
               </Link>
             </div>
           </FadeIn>
         ) : (
-          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" staggerDelay={0.08}>
+          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" staggerDelay={0.06}>
             {favorites.map((fav) => (
               <StaggerItem key={fav.id}>
-                <motion.div whileHover={{ y: -4 }} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-50">
+                <motion.div whileHover={{ y: -4 }} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-50">
                   <div className="relative aspect-square bg-gray-100 overflow-hidden">
                     {fav.product.images?.length > 0 ? (
                       <img src={fav.product.images[0].url} alt={fav.product.name}
@@ -109,20 +126,22 @@ export default function FavoritesPage() {
                     )}
                     <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                       onClick={() => removeFavorite(fav.productId)}
-                      className="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-md text-red-500 hover:bg-red-50 transition-colors">
+                      className="absolute top-3 right-3 p-2.5 bg-white/90 rounded-full shadow-md text-red-500 hover:bg-red-50 transition-colors">
                       <Trash2 size={16} />
                     </motion.button>
                   </div>
                   <div className="p-4">
                     <Link href={L(`/products/${fav.product.slug}`)}>
-                      <h3 className="font-semibold text-secondary hover:text-gold transition-colors mb-1">{fav.product.name}</h3>
+                      <h3 className="font-semibold text-secondary hover:text-gold transition-colors mb-1 line-clamp-1">{fav.product.name}</h3>
                     </Link>
-                    <p className="text-xs text-gray-400 mb-2">{fav.product.weight}g | عيار {fav.product.karat.replace("K", "")}</p>
+                    <p className="text-xs text-gray-400 mb-3">
+                      {fav.product.weight}g · {locale === "ar" ? `عيار ${fav.product.karat.replace("K", "")}` : `${fav.product.karat}`}
+                    </p>
                     <div className="flex items-center justify-between">
                       <span className="text-gold font-bold text-lg">{fav.product.calculatedPrice.toLocaleString()} د.م</span>
                       <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                         onClick={() => handleAddToCart(fav.product)}
-                        className="p-2 bg-gold text-secondary rounded-full hover:bg-gold-dark transition-colors shadow-md shadow-gold/20">
+                        className="p-2.5 bg-gold text-secondary rounded-xl hover:bg-gold-dark transition-colors shadow-md shadow-gold/20">
                         <ShoppingBag size={16} />
                       </motion.button>
                     </div>

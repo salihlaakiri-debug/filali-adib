@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
 import { FadeIn } from "@/components/motion";
 import { FaLogo } from "@/components/icons";
+import { MapPin, Phone, Mail, Clock, ArrowUp } from "lucide-react";
 
 export function Footer() {
   const t = useTranslations();
@@ -38,10 +39,10 @@ export function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-          {/* About */}
-          <FadeIn direction="up" delay={0}>
-            <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+          {/* Brand */}
+          <FadeIn direction="up" delay={0} className="lg:col-span-2">
+            <div>
               <div className="flex items-center gap-2.5 mb-6">
                 <motion.div whileHover={{ rotate: 15 }} transition={{ type: "spring" }}>
                   <FaLogo size={30} className="text-gold" />
@@ -55,10 +56,11 @@ export function Footer() {
                   </span>
                 </div>
               </div>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                {t("footer.aboutText")}
+              <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-xs">
+                {locale === "ar"
+                  ? "حرفي مجوهرات بخبرة تمتد لسنوات في صناعة وبيع وشراء الذهب والمجوهرات الفاخرة في المغرب."
+                  : "Joaillier artisan avec des années d'expérience dans la fabrication et la vente d'or et de bijoux de luxe au Maroc."}
               </p>
-              {/* Social links */}
               <div className="flex gap-3">
                 {[
                   { label: "Facebook", path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
@@ -73,7 +75,7 @@ export function Footer() {
                     className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center text-gold/70 hover:bg-gold hover:text-secondary transition-all duration-300 hover:shadow-lg hover:shadow-gold/20"
                     aria-label={social.label}
                   >
-                    <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d={social.path} />
                     </svg>
                   </motion.a>
@@ -119,28 +121,10 @@ export function Footer() {
               </h3>
               <ul className="space-y-3">
                 {[
-                  { href: "/track", label: "تتبع الطلب" },
-                  { href: "/shipping", label: t("product.shipping") },
-                  { href: "/returns", label: t("product.returns") },
-                  { href: "/faq", label: "FAQ" },
-                  {
-                    href: "/privacy",
-                    label:
-                      locale === "fr"
-                        ? "Politique de Confidentialité"
-                        : locale === "en"
-                          ? "Privacy Policy"
-                          : "سياسة الخصوصية",
-                  },
-                  {
-                    href: "/terms",
-                    label:
-                      locale === "fr"
-                        ? "Conditions Générales"
-                        : locale === "en"
-                          ? "Terms & Conditions"
-                          : "الشروط والأحكام",
-                  },
+                  { href: "/track", label: locale === "ar" ? "تتبع الطلب" : "Suivi de Commande" },
+                  { href: "/privacy", label: locale === "ar" ? "سياسة الخصوصية" : "Confidentialité" },
+                  { href: "/terms", label: locale === "ar" ? "الشروط والأحكام" : "Conditions Générales" },
+                  { href: "/favorites", label: locale === "ar" ? "المفضلة" : "Favoris" },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
@@ -160,28 +144,28 @@ export function Footer() {
           <FadeIn direction="up" delay={0.3}>
             <div>
               <h3 className="text-gold font-semibold mb-6 relative pb-3">
-                {t("footer.followUs")}
+                {locale === "ar" ? "معلومات التواصل" : "Contact"}
                 <span className="absolute bottom-0 left-0 w-10 h-[2px] bg-gradient-to-r from-gold to-transparent" />
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3 text-gray-400 text-sm">
-                  <svg className="w-4 h-4 text-gold/60 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                  </svg>
-                  <span>الطالعة الكبيرة 42، فاس، المغرب</span>
+                  <MapPin size={16} className="text-gold/60 mt-0.5 flex-shrink-0" />
+                  <span>{locale === "ar" ? "الطالعة الكبيرة 42، فاس، المغرب" : "42 Talaa Kebira, Fès, Maroc"}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 text-sm">
-                  <svg className="w-4 h-4 text-gold/60 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                  </svg>
+                  <Phone size={16} className="text-gold/60 flex-shrink-0" />
                   <span dir="ltr">+212 6 44 69 08 61</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 text-sm">
-                  <svg className="w-4 h-4 text-gold/60 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                  </svg>
+                  <Mail size={16} className="text-gold/60 flex-shrink-0" />
                   <span>contact@filali-adib.ma</span>
+                </div>
+                <div className="flex items-start gap-3 text-gray-400 text-sm">
+                  <Clock size={16} className="text-gold/60 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p>{locale === "ar" ? "السبت - الخميس" : "Sam - Jeu"}</p>
+                    <p>{locale === "ar" ? "9:00 - 19:00" : "9h00 - 19h00"}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -195,12 +179,22 @@ export function Footer() {
               &copy; {new Date().getFullYear()} Filali Adib - Artiste Joaillier.{" "}
               {t("footer.copyright")}.
             </p>
-            <div className="flex items-center gap-1 text-gray-600 text-xs">
-              <span>صُنع بـ</span>
-              <svg width="10" height="10" viewBox="0 0 10 10" className="text-gold/50">
-                <path d="M5 0L10 5L5 10L0 5Z" fill="currentColor" />
-              </svg>
-              <span>في فاس</span>
+            <div className="flex items-center gap-4 text-gray-500 text-xs">
+              <Link href={L("/privacy")} className="hover:text-gold transition-colors">
+                {locale === "ar" ? "الخصوصية" : "Confidentialité"}
+              </Link>
+              <span>·</span>
+              <Link href={L("/terms")} className="hover:text-gold transition-colors">
+                {locale === "ar" ? "الشروط" : "Conditions"}
+              </Link>
+              <span>·</span>
+              <div className="flex items-center gap-1">
+                <span>{locale === "ar" ? "صُنع بـ" : "Made with"}</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" className="text-gold/50">
+                  <path d="M5 0L10 5L5 10L0 5Z" fill="currentColor" />
+                </svg>
+                <span>{locale === "ar" ? "في فاس" : "à Fès"}</span>
+              </div>
             </div>
           </div>
         </div>
