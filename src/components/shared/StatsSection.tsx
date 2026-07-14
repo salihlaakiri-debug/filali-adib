@@ -96,7 +96,7 @@ function tOrDefault(t: ReturnType<typeof useTranslations>, key: string, fallback
 export function StatsSection() {
   const t = useTranslations("home.stats");
   const stats: StatItem[] = [
-    { target: 40, suffix: "+", label: tOrDefault(t, "experience", defaultStats[0].label) },
+    { target: 40, suffix: "+", label: tOrDefault(t, "years", defaultStats[0].label) },
     { target: 50000, suffix: "+", label: tOrDefault(t, "customers", defaultStats[1].label) },
     { target: 10000, suffix: "+", label: tOrDefault(t, "products", defaultStats[2].label) },
     { target: 4.9, suffix: "", label: tOrDefault(t, "rating", defaultStats[3].label), decimals: 1 },

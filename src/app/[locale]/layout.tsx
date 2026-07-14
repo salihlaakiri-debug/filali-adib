@@ -127,15 +127,9 @@ export default async function LocaleLayout({
               openingHoursSpecification: [
                 {
                   "@type": "OpeningHoursSpecification",
-                  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-                  opens: "09:30",
-                  closes: "20:00",
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  dayOfWeek: "Sunday",
-                  opens: "10:00",
-                  closes: "14:00",
+                  dayOfWeek: ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+                  opens: "09:00",
+                  closes: "19:00",
                 },
               ],
               sameAs: [

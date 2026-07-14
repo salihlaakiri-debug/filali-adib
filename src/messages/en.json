@@ -34,7 +34,10 @@
     "admin": "Dashboard",
     "orders": "Orders",
     "favorites": "Favorites",
-    "search": "Search"
+    "search": "Search",
+    "goldPrice": "Gold Price",
+    "madPerGram": "MAD/g",
+    "karat18": "18 Karat"
   },
   "home": {
     "hero": {
@@ -60,7 +63,8 @@
         "quality": "High Quality Gold",
         "expertise": "Expertise & Professionalism",
         "trust": "Trust & Integrity"
-      }
+      },
+      "yearsLabel": "years of experience"
     },
     "newsletter": {
       "title": "Subscribe to our Newsletter",
@@ -214,11 +218,16 @@
   },
   "footer": {
     "about": "About Filali Adib",
-    "aboutText": "A jewelry artisan with years of experience in gold trading.",
+    "aboutText": "A jewelry artisan with years of experience in crafting and selling gold and luxury jewelry in Morocco.",
     "quickLinks": "Quick Links",
     "customerService": "Customer Service",
     "followUs": "Follow Us",
-    "copyright": "All Rights Reserved"
+    "copyright": "All Rights Reserved",
+    "trackOrder": "Track Order",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "favorites": "Favorites",
+    "contactUs": "Contact Us"
   },
   "admin": {
     "dashboard": {

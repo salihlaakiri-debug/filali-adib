@@ -34,7 +34,10 @@
     "admin": "Tableau de Bord",
     "orders": "Commandes",
     "favorites": "Favoris",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "goldPrice": "Prix de l'Or",
+    "madPerGram": "MAD/g",
+    "karat18": "18 Carats"
   },
   "home": {
     "hero": {
@@ -60,7 +63,8 @@
         "quality": "Or de Haute Qualité",
         "expertise": "Expertise et Professionnalisme",
         "trust": "Confiance et Intégrité"
-      }
+      },
+      "yearsLabel": "ans d'expérience"
     },
     "newsletter": {
       "title": "Abonnez-vous à notre Newsletter",
@@ -214,11 +218,16 @@
   },
   "footer": {
     "about": "À Propos de Filali Adib",
-    "aboutText": "Un artisan joaillier avec des années d'expérience dans le commerce de l'or.",
+    "aboutText": "Artisan joaillier avec des années d'expérience dans la fabrication et la vente d'or et de bijoux de luxe au Maroc.",
     "quickLinks": "Liens Rapides",
     "customerService": "Service Client",
     "followUs": "Suivez-nous",
-    "copyright": "Tous Droits Réservés"
+    "copyright": "Tous Droits Réservés",
+    "trackOrder": "Suivi de Commande",
+    "privacy": "Confidentialité",
+    "terms": "Conditions Générales",
+    "favorites": "Favoris",
+    "contactUs": "Contact"
   },
   "admin": {
     "dashboard": {

@@ -50,7 +50,7 @@ export function FeaturedProducts() {
       karat: karatNum,
       stock: product.stock,
     });
-    addToast(`${product.name} تمت الإضافة للسلة`);
+    addToast(`${product.name} ${locale === "ar" ? "تمت الإضافة للسلة" : "ajouté au panier"}`);
   };
 
   return (
@@ -152,7 +152,7 @@ export function FeaturedProducts() {
                               className="w-full py-2.5 bg-gold text-secondary rounded-xl font-semibold text-sm shadow-xl shadow-gold/30 hover:bg-gold-dark transition-colors flex items-center justify-center gap-2 backdrop-blur-sm"
                             >
                               <ShoppingBag size={16} />
-                              أضف للسلة
+                              {locale === "ar" ? "أضف للسلة" : "Ajouter au panier"}
                             </motion.button>
                           </motion.div>
                         )}
@@ -175,12 +175,12 @@ export function FeaturedProducts() {
                     <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
                       <span className="bg-gray-50 px-2 py-0.5 rounded-full">{product.weight}g</span>
                       <span className="w-1 h-1 bg-gray-300 rounded-full" />
-                      <span className="bg-gray-50 px-2 py-0.5 rounded-full">عيار {karatNum}</span>
+                      <span className="bg-gray-50 px-2 py-0.5 rounded-full">{locale === "ar" ? "عيار" : "Karat"} {karatNum}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gold font-bold text-lg">
                         {product.calculatedPrice.toLocaleString()}
-                        <span className="text-gray-400 text-sm font-normal mr-1">د.م</span>
+                        <span className="text-gray-400 text-sm font-normal mr-1">{locale === "ar" ? "د.م" : "MAD"}</span>
                       </span>
                       <motion.button
                         whileHover={{ scale: 1.1, rotate: -5 }}
@@ -210,7 +210,7 @@ export function FeaturedProducts() {
               href={L("/products")}
               className="group bg-secondary text-white px-10 py-4 rounded-full font-semibold hover:bg-secondary/90 transition-all duration-300 shadow-xl shadow-secondary/10 hover:shadow-secondary/20 inline-flex items-center gap-3"
             >
-              عرض جميع المنتجات
+              {locale === "ar" ? "عرض جميع المنتجات" : "Voir Tous les Produits"}
               <svg
                 className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
                 viewBox="0 0 16 16"

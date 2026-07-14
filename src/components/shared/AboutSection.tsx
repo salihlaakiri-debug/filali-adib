@@ -65,9 +65,9 @@ export function AboutSection() {
                 className="absolute -bottom-8 -left-8 bg-secondary text-white p-6 rounded-2xl shadow-2xl border border-gold/20"
               >
                 <p className="font-playfair text-4xl font-bold text-gold">
-                  <AnimatedCounter target={15} prefix="+" />
+                  <AnimatedCounter target={40} prefix="+" />
                 </p>
-                <p className="text-sm text-gray-300">سنة خبرة</p>
+                <p className="text-sm text-gray-300">{t("yearsLabel")}</p>
               </motion.div>
             </div>
           </FadeIn>

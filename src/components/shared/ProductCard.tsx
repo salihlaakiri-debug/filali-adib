@@ -49,7 +49,7 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
       karat: karatNum,
       stock: product.stock,
     });
-    addToast(`${product.name} تمت الإضافة للسلة`);
+    addToast(`${product.name} ${locale === "ar" ? "تمت الإضافة للسلة" : "ajouté au panier"}`);
   };
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
@@ -63,9 +63,11 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
       .then((r) => r.json())
       .then((data) => {
         setIsFav(data.added);
-        addToast(data.added ? "تمت الإضافة للمفضلة" : "تمت الإزالة من المفضلة");
+        addToast(data.added
+          ? (locale === "ar" ? "تمت الإضافة للمفضلة" : "Ajouté aux favoris")
+          : (locale === "ar" ? "تمت الإزالة من المفضلة" : "Retiré des favoris"));
       })
-      .catch(() => addToast("سجّل الدخول أولاً"));
+      .catch(() => addToast(locale === "ar" ? "سجّل الدخول أولاً" : "Connectez-vous d'abord"));
   };
 
   if (viewMode === "list") {
@@ -94,7 +96,7 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
                 animate={{ scale: 1 }}
                 className="absolute top-3 left-3 bg-gold text-secondary text-xs px-3 py-1 rounded-full font-bold shadow-lg shadow-gold/30"
               >
-                جديد
+                {locale === "ar" ? "جديد" : "Nouveau"}
               </motion.span>
             )}
           </div>
@@ -109,12 +111,12 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
               <div className="flex items-center gap-3 text-xs text-gray-400">
                 <span className="bg-gray-50 px-2 py-0.5 rounded-full">{product.weight}g</span>
                 <span className="w-1 h-1 bg-gray-300 rounded-full" />
-                <span className="bg-gray-50 px-2 py-0.5 rounded-full">عيار {karatNum}</span>
+                <span className="bg-gray-50 px-2 py-0.5 rounded-full">{locale === "ar" ? "عيار" : "Karat"} {karatNum}</span>
               </div>
             </div>
             <div className="flex items-center justify-between mt-4">
               <div>
-                <span className="text-gold font-bold text-xl">{product.calculatedPrice.toLocaleString()} د.م</span>
+                <span className="text-gold font-bold text-xl">{product.calculatedPrice.toLocaleString()} {locale === "ar" ? "د.م" : "MAD"}</span>
               </div>
               <div className="flex items-center gap-2">
                 <motion.button
@@ -182,7 +184,7 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
                 animate={{ x: 0, opacity: 1 }}
                 className="bg-gold text-secondary text-xs px-3 py-1 rounded-full font-bold shadow-lg shadow-gold/30 backdrop-blur-sm"
               >
-                جديد
+                {locale === "ar" ? "جديد" : "Nouveau"}
               </motion.span>
             )}
             {product.videos && product.videos.length > 0 && (
@@ -193,7 +195,7 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
                 className="bg-secondary/80 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-lg"
               >
                 <Play size={10} fill="currentColor" />
-                {product.videos.length} فيديو
+                {product.videos.length} {locale === "ar" ? "فيديو" : "vidéo"}
               </motion.span>
             )}
           </div>
@@ -229,7 +231,7 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
                   className="w-full py-2.5 bg-gold text-secondary rounded-xl font-semibold text-sm shadow-xl shadow-gold/30 hover:bg-gold-dark transition-colors flex items-center justify-center gap-2 backdrop-blur-sm"
                 >
                   <ShoppingBag size={16} />
-                  أضف للسلة
+                  {locale === "ar" ? "أضف للسلة" : "Ajouter au panier"}
                 </motion.button>
               </motion.div>
             )}
@@ -250,17 +252,17 @@ export function ProductCard({ product, viewMode }: ProductCardProps) {
           <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
             <span className="bg-gray-50 px-2 py-0.5 rounded-full">{product.weight}g</span>
             <span className="w-1 h-1 bg-gray-300 rounded-full" />
-            <span className="bg-gray-50 px-2 py-0.5 rounded-full">عيار {karatNum}</span>
+            <span className="bg-gray-50 px-2 py-0.5 rounded-full">{locale === "ar" ? "عيار" : "Karat"} {karatNum}</span>
           </div>
           <div className="flex items-center justify-between">
             <div>
               <span className="text-gold font-bold text-lg">{product.calculatedPrice.toLocaleString()}</span>
-              <span className="text-gray-400 text-sm mr-1">د.م</span>
+              <span className="text-gray-400 text-sm mr-1">{locale === "ar" ? "د.م" : "MAD"}</span>
             </div>
             <motion.span
               className="text-xs text-gold group-hover:translate-x-1 transition-transform duration-300 inline-flex items-center gap-1"
             >
-              عرض التفاصيل
+              {locale === "ar" ? "عرض التفاصيل" : "Voir les détails"}
               <svg
                 className="w-3 h-3"
                 viewBox="0 0 12 12"

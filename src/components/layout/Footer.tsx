@@ -58,9 +58,7 @@ export function Footer() {
                 </div>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-xs">
-                {locale === "ar"
-                  ? "حرفي مجوهرات بخبرة تمتد لسنوات في صناعة وبيع وشراء الذهب والمجوهرات الفاخرة في المغرب."
-                  : "Joaillier artisan avec des années d'expérience dans la fabrication et la vente d'or et de bijoux de luxe au Maroc."}
+                {t("footer.aboutText")}
               </p>
               <div className="flex gap-3">
                 {[
@@ -124,10 +122,10 @@ export function Footer() {
               </h3>
               <ul className="space-y-3">
                 {[
-                  { href: "/track", label: locale === "ar" ? "تتبع الطلب" : "Suivi de Commande" },
-                  { href: "/privacy", label: locale === "ar" ? "سياسة الخصوصية" : "Confidentialité" },
-                  { href: "/terms", label: locale === "ar" ? "الشروط والأحكام" : "Conditions Générales" },
-                  { href: "/favorites", label: locale === "ar" ? "المفضلة" : "Favoris" },
+                  { href: "/track", label: t("footer.trackOrder") },
+                  { href: "/privacy", label: t("footer.privacy") },
+                  { href: "/terms", label: t("footer.terms") },
+                  { href: "/favorites", label: t("footer.favorites") },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
@@ -147,7 +145,7 @@ export function Footer() {
           <FadeIn direction="up" delay={0.3}>
             <div>
               <h3 className="text-gold font-semibold mb-6 relative pb-3">
-                {locale === "ar" ? "معلومات التواصل" : "Contact"}
+                {t("footer.contactUs")}
                 <span className="absolute bottom-0 left-0 w-10 h-[2px] bg-gradient-to-r from-gold to-transparent" />
               </h3>
               <div className="space-y-4">
@@ -184,11 +182,11 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-4 text-gray-500 text-xs">
               <Link href={L("/privacy")} className="hover:text-gold transition-colors">
-                {locale === "ar" ? "الخصوصية" : "Confidentialité"}
+                {t("footer.privacy")}
               </Link>
               <span>·</span>
               <Link href={L("/terms")} className="hover:text-gold transition-colors">
-                {locale === "ar" ? "الشروط" : "Conditions"}
+                {t("footer.terms")}
               </Link>
               <span>·</span>
               <div className="flex items-center gap-1">

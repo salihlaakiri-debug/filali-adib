@@ -59,13 +59,13 @@ export function Navbar() {
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-center gap-3 py-1.5 text-xs">
               <Diamond size={10} className="text-gold/60" />
-              <span className="text-gold/80 font-medium hidden sm:inline">سعر الذهب</span>
+              <span className="text-gold/80 font-medium hidden sm:inline">{t("nav.goldPrice")}</span>
               <span className="text-gray-600 hidden sm:inline">|</span>
               <span className="text-gold font-bold">
-                {goldPrice.price18k.toLocaleString()} د.م/غ
+                {goldPrice.price18k.toLocaleString()} {t("nav.madPerGram")}
               </span>
               <span className="text-gray-600">|</span>
-              <span className="text-gray-500">عيار 18</span>
+              <span className="text-gray-500">{t("nav.karat18")}</span>
               {goldPrice.change !== undefined && goldPrice.change !== 0 && (
                 <span className={`flex items-center gap-0.5 ${(goldPrice.change || 0) >= 0 ? "text-green-400" : "text-red-400"}`}>
                   {(goldPrice.change || 0) >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}

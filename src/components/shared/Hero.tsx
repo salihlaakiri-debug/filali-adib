@@ -55,6 +55,7 @@ function DiamondDivider() {
 
 export function Hero() {
   const t = useTranslations("home.hero");
+  const tt = useTranslations("home.trust");
   const locale = useLocale();
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const containerRef = useRef(null);
@@ -207,19 +208,19 @@ export function Hero() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gold/60">
               <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-            <span>شهادة أصالة</span>
+            <span>{tt("authenticity.title")}</span>
           </div>
           <div className="hidden sm:flex items-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gold/60">
               <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
-            <span>شحن مجاني</span>
+            <span>{tt("shipping.title")}</span>
           </div>
           <div className="hidden sm:flex items-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gold/60">
               <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>أسعار تنافسية</span>
+            <span>{tt("return.title")}</span>
           </div>
         </motion.div>
       </motion.div>

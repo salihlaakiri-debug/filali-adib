@@ -34,7 +34,7 @@ const paymentLabels: Record<string, { ar: string; fr: string }> = {
   CASH: { ar: "نقدي", fr: "Espèces" },
   CARD: { ar: "بطاقة", fr: "Carte" },
   CASH_ON_DELIVERY: { ar: "الدفع عند الاستلام", fr: "Paiement à la livraison" },
-  MOBILE: { ar: "مobil", fr: "Mobile" },
+  MOBILE: { ar: "جوال", fr: "Mobile" },
 };
 
 export default function DashboardPage() {

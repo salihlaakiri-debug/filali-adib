@@ -91,7 +91,7 @@ export function Categories() {
 
                   <div className="px-3 py-3 text-center">
                     <span className="text-xs text-gold font-semibold group-hover:text-gold-dark transition-colors">
-                      {category.count} منتج
+                      {category.count} {locale === "ar" ? "منتج" : "produits"}
                     </span>
                   </div>
                 </Link>
