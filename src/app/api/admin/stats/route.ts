@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { isAdminRequest } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
-    const session = await auth();
-    if (!session || !["ADMIN", "SUPER_ADMIN"].includes((session.user as any)?.role)) {
+    if (!(await isAdminRequest(request))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

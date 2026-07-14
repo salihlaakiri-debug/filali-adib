@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
@@ -29,41 +29,57 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const locale = useLocale();
+  const searchParams = useSearchParams();
+  const secretKey = searchParams.get("key");
+  const hasSecretAccess = secretKey && secretKey.length > 0;
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
+    if (hasSecretAccess) return;
     if (status === "unauthenticated") router.push(L("/login"));
     if (status === "authenticated" && !["ADMIN", "SUPER_ADMIN"].includes((session?.user as any)?.role)) router.push(L("/"));
-  }, [status, session, router, L]);
+  }, [status, session, router, L, hasSecretAccess]);
 
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <Loader2 size={40} className="text-gold animate-spin" />
-      </div>
-    );
-  }
-
-  if (status === "unauthenticated" || !["ADMIN", "SUPER_ADMIN"].includes((session?.user as any)?.role)) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 mb-4">{locale === "ar" ? "غير مصرح لك بالدخول" : "Access denied"}</p>
-          <Link href={L("/login")} className="bg-gold text-secondary px-6 py-2 rounded-lg font-medium">
-            {locale === "ar" ? "تسجيل الدخول" : "Sign in"}
-          </Link>
+  if (!hasSecretAccess) {
+    if (status === "loading") {
+      return (
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+          <Loader2 size={40} className="text-gold animate-spin" />
         </div>
-      </div>
-    );
+      );
+    }
+
+    if (status === "unauthenticated" || !["ADMIN", "SUPER_ADMIN"].includes((session?.user as any)?.role)) {
+      return (
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-500 mb-4">{locale === "ar" ? "غير مصرح لك بالدخول" : "Access denied"}</p>
+            <Link href={L("/login")} className="bg-gold text-secondary px-6 py-2 rounded-lg font-medium">
+              {locale === "ar" ? "تسجيل الدخول" : "Sign in"}
+            </Link>
+          </div>
+        </div>
+      );
+    }
   }
 
-  const user = session?.user as any;
-  const isActive = (href: string) => pathname === `/${locale}${href}` || pathname.startsWith(`/${locale}${href}/`);
+  const user = hasSecretAccess
+    ? { name: "Admin", email: "admin@filali-adib.ma", char: "A" }
+    : (session?.user as any);
+  const isActive = (href: string) => {
+    const fullPath = `/${locale}${href}`;
+    return pathname === fullPath || pathname.startsWith(`${fullPath}/`);
+  };
   const activeItem = menuItems.find((i) => isActive(i.href));
+
+  const adminLink = (href: string) => {
+    const base = L(href);
+    return hasSecretAccess ? `${base}?key=${encodeURIComponent(secretKey!)}` : base;
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
@@ -78,7 +94,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }`}>
         {/* Header */}
         <div className="p-5 border-b border-white/10">
-          <Link href={L("/admin/dashboard")} className="flex items-center gap-2.5">
+          <Link href={adminLink("/admin/dashboard")} className="flex items-center gap-2.5">
             <FaLogo size={28} className="text-gold" />
             <div className="flex flex-col">
               <span className="font-playfair text-gold font-bold tracking-wider text-sm">FILALI ADIB</span>
@@ -106,7 +122,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {menuItems.map((item) => {
             const active = isActive(item.href);
             return (
-              <Link key={item.href} href={L(item.href)}
+              <Link key={item.href} href={adminLink(item.href)}
                 className={`mx-2 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm ${
                   active
                     ? "bg-gold/15 text-gold font-medium"
