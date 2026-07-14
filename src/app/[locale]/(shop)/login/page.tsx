@@ -47,7 +47,14 @@ export default function LoginPage() {
         setError(locale === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials");
         return;
       }
-      router.push(L("/"));
+      const sessionRes = await fetch("/api/auth/session");
+      const sessionData = await sessionRes.json();
+      const role = sessionData?.user?.role;
+      if (role === "ADMIN" || role === "SUPER_ADMIN") {
+        router.push(L("/admin/dashboard"));
+      } else {
+        router.push(L("/"));
+      }
       router.refresh();
     } catch {
       setError(locale === "ar" ? "حدث خطأ في الاتصال" : "Connection error");
@@ -204,7 +211,7 @@ export default function LoginPage() {
           <div className="space-y-3">
             {process.env.NEXT_PUBLIC_GOOGLE_ENABLED === "true" && (
               <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                onClick={() => signIn("google", { callbackUrl: "/" })}
+                onClick={() => signIn("google", { callbackUrl: L("/") })}
                 className="w-full border-2 border-gray-200 py-3.5 rounded-xl font-medium hover:bg-white hover:border-gray-300 transition-all flex items-center justify-center gap-3 bg-white">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

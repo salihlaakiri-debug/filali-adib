@@ -1,11 +1,13 @@
 "use client";
 
 import { useLocale } from "next-intl";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
 import {
   DollarSign, ShoppingCart, Package, Users, TrendingUp, Clock, Eye,
-  ArrowUpRight, ArrowDownRight, AlertTriangle, Star, Tag, BarChart3,
+  ArrowUpRight, AlertTriangle, Star, BarChart3, CreditCard, Banknote,
+  Smartphone, Calendar, ChevronRight, RefreshCw, LayoutDashboard,
 } from "lucide-react";
 import { AdminStatsCard, AdminBadge, AdminLoading } from "@/components/admin";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
@@ -24,22 +26,37 @@ const statusColors: Record<string, string> = {
   SHIPPED: "#A855F7", DELIVERED: "#22C55E", CANCELLED: "#EF4444",
 };
 
+const paymentIcons: Record<string, any> = {
+  CASH: Banknote, CARD: CreditCard, CASH_ON_DELIVERY: Banknote, MOBILE: Smartphone,
+};
+
+const paymentLabels: Record<string, { ar: string; fr: string }> = {
+  CASH: { ar: "نقدي", fr: "Espèces" },
+  CARD: { ar: "بطاقة", fr: "Carte" },
+  CASH_ON_DELIVERY: { ar: "الدفع عند الاستلام", fr: "Paiement à la livraison" },
+  MOBILE: { ar: "مobil", fr: "Mobile" },
+};
+
 export default function DashboardPage() {
   const locale = useLocale();
+  const { data: session } = useSession();
   const L = (href: string) => `/${locale}${href === "/" ? "" : href}`;
   const t = (ar: string, fr: string) => locale === "ar" ? ar : fr;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(30);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
+  const fetchData = () => {
+    setRefreshing(true);
     fetch(`/api/admin/analytics?days=${days}`)
       .then((r) => r.json())
       .then(setData)
       .catch(() => console.warn("Failed to fetch dashboard data"))
-      .finally(() => setLoading(false));
-  }, [days]);
+      .finally(() => { setLoading(false); setRefreshing(false); });
+  };
+
+  useEffect(() => { fetchData(); }, [days]);
 
   const chartData = useMemo(() => {
     if (!data?.dailyRevenue?.length) return [];
@@ -59,14 +76,54 @@ export default function DashboardPage() {
     }));
   }, [data?.ordersByStatus]);
 
+  const paymentBreakdown = useMemo(() => {
+    if (!data?.ordersByPaymentMethod?.length) return [];
+    const total = data.ordersByPaymentMethod.reduce((s: number, p: any) => s + p.total, 0);
+    return data.ordersByPaymentMethod.map((p: any) => ({
+      ...p,
+      percentage: total > 0 ? (p.total / total) * 100 : 0,
+    }));
+  }, [data?.ordersByPaymentMethod]);
+
   if (loading) return <AdminLoading />;
   if (!data) return <AdminLoading text="Error" />;
 
   const m = data.metrics || {};
+  const now = new Date();
+  const greeting = locale === "ar"
+    ? (now.getHours() < 12 ? "صباح الخير" : now.getHours() < 18 ? "مساء الخير" : "مساء الخير")
+    : (now.getHours() < 12 ? "Bonjour" : now.getHours() < 18 ? "Bon après-midi" : "Bonsoir");
+  const adminName = (session?.user as any)?.name || (locale === "ar" ? "المدير" : "Admin");
 
   return (
     <div className="space-y-6">
-      {/* Period selector */}
+      {/* Welcome banner */}
+      <FadeIn>
+        <div className="bg-gradient-to-l from-secondary via-secondary/95 to-secondary/90 rounded-2xl p-6 text-white relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-32 h-32 bg-gold/10 rounded-full -translate-x-16 -translate-y-16" />
+          <div className="absolute bottom-0 right-0 w-24 h-24 bg-gold/5 rounded-full translate-x-10 translate-y-10" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gold/80 text-sm mb-1">{greeting}</p>
+                <h1 className="text-2xl font-bold mb-2">{adminName}</h1>
+                <p className="text-white/60 text-sm flex items-center gap-2">
+                  <Calendar size={14} />
+                  {now.toLocaleDateString(locale === "ar" ? "ar-MA" : "fr-MA", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                </p>
+              </div>
+              <div className="hidden sm:flex flex-col items-end gap-2">
+                <div className="bg-gold/20 px-4 py-2 rounded-xl text-center">
+                  <p className="text-2xl font-bold text-gold">{m.revenue?.toLocaleString() || 0}</p>
+                  <p className="text-[11px] text-white/60">د.م {t("إيرادات", "revenue")}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </FadeIn>
+
+      {/* Controls */}
       <div className="flex items-center justify-between">
         <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
           {[7, 15, 30, 90].map((d) => (
@@ -76,6 +133,11 @@ export default function DashboardPage() {
             </button>
           ))}
         </div>
+        <button onClick={fetchData}
+          className="flex items-center gap-2 text-sm text-gray-500 hover:text-secondary transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-100">
+          <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+          {t("تحديث", "Refresh")}
+        </button>
       </div>
 
       {/* Stats cards */}
@@ -102,7 +164,7 @@ export default function DashboardPage() {
           { icon: Star, label: t("المنتجات", "Products"), count: m.products, href: "/admin/products", color: "text-blue-500", bg: "bg-blue-50" },
           { icon: BarChart3, label: t("التحليلات", "Analytics"), count: null, href: "/admin/analytics", color: "text-gold", bg: "bg-gold/10" },
         ].map((item) => (
-          <Link key={item.href} href={L(item.href)}
+          <Link key={item.href + item.label} href={L(item.href)}
             className="bg-white rounded-xl p-4 shadow-sm border border-gray-50 hover:shadow-md transition-all group">
             <div className="flex items-center justify-between mb-3">
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.bg}`}>
@@ -168,7 +230,12 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Top products */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-50">
-          <h3 className="font-semibold text-secondary mb-4">{t("المنتجات الأكثر مبيعاً", "Top Products")}</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-secondary">{t("المنتجات الأكثر مبيعاً", "Top Products")}</h3>
+            <Link href={L("/admin/products")} className="text-xs text-gold hover:text-gold-dark flex items-center gap-1">
+              {t("عرض الكل", "All")} <ArrowUpRight size={12} />
+            </Link>
+          </div>
           <div className="space-y-3">
             {data.topProducts?.length > 0 ? data.topProducts.slice(0, 7).map((p: any, i: number) => (
               <div key={i} className="flex items-center gap-3">
@@ -185,7 +252,12 @@ export default function DashboardPage() {
 
         {/* Top categories */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-50">
-          <h3 className="font-semibold text-secondary mb-4">{t("التصنيفات الأكثر مبيعاً", "Top Categories")}</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-secondary">{t("التصنيفات الأكثر مبيعاً", "Top Categories")}</h3>
+            <Link href={L("/admin/categories")} className="text-xs text-gold hover:text-gold-dark flex items-center gap-1">
+              {t("عرض الكل", "All")} <ArrowUpRight size={12} />
+            </Link>
+          </div>
           <div className="space-y-3">
             {data.topCategories?.length > 0 ? data.topCategories.map((c: any, i: number) => {
               const maxCatRev = Math.max(...data.topCategories.map((x: any) => x.revenue), 1);
@@ -204,6 +276,36 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Payment methods */}
+      {paymentBreakdown.length > 0 && (
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-50">
+          <h3 className="font-semibold text-secondary mb-4">{t("طرق الدفع", "Payment Methods")}</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {paymentBreakdown.map((p: any) => {
+              const Icon = paymentIcons[p.method] || CreditCard;
+              const label = paymentLabels[p.method]?.[locale === "ar" ? "ar" : "fr"] || p.method;
+              return (
+                <div key={p.method} className="bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                      <Icon size={18} className="text-gold" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-secondary">{label}</p>
+                      <p className="text-[11px] text-gray-400">{p.count} {t("طلب", "orders")}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <span className="text-lg font-bold text-secondary">{p.total?.toLocaleString()} <span className="text-xs font-normal text-gray-400">د.م</span></span>
+                    <span className="text-xs text-gold font-medium">{p.percentage.toFixed(0)}%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Recent orders + Low stock */}
       <div className="grid lg:grid-cols-3 gap-6">
@@ -251,18 +353,19 @@ export default function DashboardPage() {
           </div>
           <div className="space-y-2.5">
             {data.lowStockProducts?.length > 0 ? data.lowStockProducts.map((p: any) => (
-              <div key={p.id} className="flex items-center gap-3 p-2.5 bg-red-50/50 rounded-xl">
+              <Link key={p.id} href={L(`/admin/products/${p.id}`)}
+                className="flex items-center gap-3 p-2.5 bg-red-50/50 rounded-xl hover:bg-red-50 transition-colors group">
                 <div className="w-9 h-9 bg-white rounded-lg overflow-hidden flex-shrink-0">
-                  {p.images?.[0]?.url ? <img src={p.images[0].url} className="w-full h-full object-cover" /> : <Package size={14} className="text-gray-300 m-auto mt-3" />}
+                  {p.images?.[0]?.url ? <img src={p.images[0].url} className="w-full h-full object-cover" alt="" /> : <Package size={14} className="text-gray-300 m-auto mt-3" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-secondary truncate">{p.name}</p>
+                  <p className="text-sm font-medium text-secondary truncate group-hover:text-gold transition-colors">{p.name}</p>
                   <p className="text-[11px] text-gray-500">{p.karat}</p>
                 </div>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.stock === 0 ? "bg-red-100 text-red-600" : "bg-yellow-100 text-yellow-700"}`}>
                   {p.stock}
                 </span>
-              </div>
+              </Link>
             )) : (
               <div className="text-center py-6">
                 <Package size={28} className="text-gray-300 mx-auto mb-2" />
