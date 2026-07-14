@@ -69,10 +69,10 @@ export default function TrackOrderPage() {
         <FadeIn direction="up" delay={0.3}>
           <form onSubmit={handleSearch} className="flex gap-3 mb-8">
             <div className="flex-1 relative">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={18} className="absolute start-4 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="text" value={orderNumber} onChange={(e) => setOrderNumber(e.target.value)}
                 placeholder={locale === "ar" ? "رقم الطلب (مثال: FA-XXXX)" : "Order number (e.g. FA-XXXX)"}
-                className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-white text-base shadow-sm" />
+                className="w-full ps-12 pe-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-white text-base shadow-sm" />
             </div>
             <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               className="bg-gold text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-gold-dark transition-all flex items-center gap-2 shadow-lg shadow-gold/20">

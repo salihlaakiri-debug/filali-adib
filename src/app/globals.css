@@ -16,13 +16,28 @@
    BASE STYLES
    ============================================ */
 
-* {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    scroll-behavior: smooth;
+  }
 }
 
 ::selection {
   background-color: rgba(212, 175, 55, 0.2);
   color: #1a1a1a;
+}
+
+/* ============================================
+   REDUCED MOTION - disable all animations
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ============================================
@@ -188,7 +203,7 @@
     content: "";
     position: absolute;
     bottom: -4px;
-    left: 50%;
+    inset-inline-start: 50%;
     transform: translateX(-50%);
     width: 40px;
     height: 2px;
@@ -266,9 +281,5 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  img {
-    will-change: transform;
   }
 }

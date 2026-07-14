@@ -141,7 +141,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-2">
             <AnimatePresence mode="wait">
               {step === "shipping" && (
-                <motion.div key="shipping" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+                <motion.div key="shipping" initial={{ opacity: 0, x: locale === "ar" ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: locale === "ar" ? -20 : 20 }}
                   className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-50">
                   <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                     <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
@@ -177,13 +177,13 @@ export default function CheckoutPage() {
                   <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                     onClick={() => setStep("payment")}
                     className="mt-6 bg-gold text-secondary px-8 py-3.5 rounded-xl font-semibold hover:bg-gold-dark transition-all flex items-center gap-2 shadow-lg shadow-gold/20">
-                    {t("payment")} <ArrowRight size={18} />
+                    {t("payment")} {locale === "ar" ? <ArrowLeft size={18} className="rotate-180" /> : <ArrowRight size={18} />}
                   </motion.button>
                 </motion.div>
               )}
 
               {step === "payment" && (
-                <motion.div key="payment" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+                <motion.div key="payment" initial={{ opacity: 0, x: locale === "ar" ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: locale === "ar" ? -20 : 20 }}
                   className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-50">
                   <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                     <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
@@ -204,8 +204,6 @@ export default function CheckoutPage() {
                         className={`flex items-center gap-4 p-5 border-2 rounded-xl cursor-pointer transition-all ${
                           paymentMethod === m.value ? "border-gold bg-gold/5 shadow-sm" : "border-gray-200 hover:border-gold/30"
                         }`}>
-                        <input type="radio" name="payment" value={m.value} checked={paymentMethod === m.value}
-                          onChange={() => setPaymentMethod(m.value)} className="accent-gold w-4 h-4" />
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                           paymentMethod === m.value ? "bg-gold/10" : "bg-gray-100"
                         }`}>
@@ -220,6 +218,8 @@ export default function CheckoutPage() {
                         }`}>
                           {paymentMethod === m.value && <div className="w-2.5 h-2.5 bg-gold rounded-full" />}
                         </div>
+                        <input type="radio" name="payment" value={m.value} checked={paymentMethod === m.value}
+                          onChange={() => setPaymentMethod(m.value)} className="sr-only" />
                       </label>
                     ))}
                   </div>
@@ -227,19 +227,19 @@ export default function CheckoutPage() {
                   <div className="flex gap-4">
                     <button onClick={() => setStep("shipping")}
                       className="px-6 py-3.5 border-2 border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
-                      <ArrowLeft size={16} /> {locale === "ar" ? "رجوع" : "Back"}
+                      <ArrowLeft size={16} className={locale === "ar" ? "rotate-180" : ""} /> {locale === "ar" ? "رجوع" : "Back"}
                     </button>
                     <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                       onClick={() => setStep("review")}
                       className="bg-gold text-secondary px-8 py-3.5 rounded-xl font-semibold hover:bg-gold-dark transition-all flex items-center gap-2 shadow-lg shadow-gold/20">
-                      {t("review")} <ArrowRight size={18} />
+                      {t("review")} <ArrowRight size={18} className={locale === "ar" ? "rotate-180" : ""} />
                     </motion.button>
                   </div>
                 </motion.div>
               )}
 
               {step === "review" && (
-                <motion.div key="review" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+                <motion.div key="review" initial={{ opacity: 0, x: locale === "ar" ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: locale === "ar" ? -20 : 20 }}
                   className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-50">
                   <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                     <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
@@ -306,7 +306,7 @@ export default function CheckoutPage() {
                   <div className="flex gap-4">
                     <button onClick={() => setStep("payment")}
                       className="px-6 py-3.5 border-2 border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
-                      <ArrowLeft size={16} /> {locale === "ar" ? "رجوع" : "Back"}
+                      <ArrowLeft size={16} className={locale === "ar" ? "rotate-180" : ""} /> {locale === "ar" ? "رجوع" : "Back"}
                     </button>
                     <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                       onClick={handlePlaceOrder} disabled={loading}

@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode } from "react";
+import { useEffect, useRef, useState, ReactNode, useMemo } from "react";
 import { motion, useInView, useAnimation, Variant } from "framer-motion";
 
+function useIsRTL() {
+  const [isRTL, setIsRTL] = useState(false);
+  useEffect(() => {
+    setIsRTL(document.documentElement.dir === "rtl");
+  }, []);
+  return isRTL;
+}
+
 // ============================================
-// FADE IN (from any direction)
+// FADE IN (from any direction) - RTL-aware
 // ============================================
 
 interface FadeInProps {
@@ -27,14 +35,15 @@ export function FadeIn({
   const ref = useRef(null);
   const isInView = useInView(ref, { once, margin: "-60px" });
   const controls = useAnimation();
+  const isRTL = useIsRTL();
 
-  const dirMap: Record<string, { initial: Variant; animate: Variant }> = {
+  const dirMap: Record<string, { initial: Variant; animate: Variant }> = useMemo(() => ({
     up: { initial: { opacity: 0, y: 40 }, animate: { opacity: 1, y: 0 } },
     down: { initial: { opacity: 0, y: -40 }, animate: { opacity: 1, y: 0 } },
-    left: { initial: { opacity: 0, x: 40 }, animate: { opacity: 1, x: 0 } },
-    right: { initial: { opacity: 0, x: -40 }, animate: { opacity: 1, x: 0 } },
+    left: { initial: { opacity: 0, x: isRTL ? -40 : 40 }, animate: { opacity: 1, x: 0 } },
+    right: { initial: { opacity: 0, x: isRTL ? 40 : -40 }, animate: { opacity: 1, x: 0 } },
     none: { initial: { opacity: 0 }, animate: { opacity: 1 } },
-  };
+  }), [isRTL]);
 
   useEffect(() => {
     if (isInView) controls.start("animate");
@@ -55,7 +64,7 @@ export function FadeIn({
 }
 
 // ============================================
-// STAGGER CONTAINER + ITEM
+// STAGGER CONTAINER + ITEM - RTL-aware
 // ============================================
 
 interface StaggerContainerProps {
@@ -101,7 +110,9 @@ export function StaggerItem({
   className,
   direction = "up",
 }: StaggerItemProps) {
-  const dirMap: Record<string, { hidden: Variant; visible: Variant }> = {
+  const isRTL = useIsRTL();
+
+  const dirMap: Record<string, { hidden: Variant; visible: Variant }> = useMemo(() => ({
     up: {
       hidden: { opacity: 0, y: 30 },
       visible: { opacity: 1, y: 0 },
@@ -111,18 +122,18 @@ export function StaggerItem({
       visible: { opacity: 1, y: 0 },
     },
     left: {
-      hidden: { opacity: 0, x: 30 },
+      hidden: { opacity: 0, x: isRTL ? -30 : 30 },
       visible: { opacity: 1, x: 0 },
     },
     right: {
-      hidden: { opacity: 0, x: -30 },
+      hidden: { opacity: 0, x: isRTL ? 30 : -30 },
       visible: { opacity: 1, x: 0 },
     },
     none: {
       hidden: { opacity: 0 },
       visible: { opacity: 1 },
     },
-  };
+  }), [isRTL]);
 
   return (
     <motion.div
@@ -164,7 +175,7 @@ export function ScaleIn({ children, delay = 0, duration = 0.5, className }: Scal
 }
 
 // ============================================
-// TEXT REVEAL (word by word)
+// TEXT REVEAL (word by word) - RTL-aware
 // ============================================
 
 interface TextRevealProps {
@@ -184,7 +195,7 @@ export function TextReveal({ text, children, className, delay = 0, staggerDelay 
     return (
       <span ref={ref} className={className}>
         {words.map((word, i) => (
-          <span key={i} className="inline-block overflow-hidden mr-2">
+          <span key={i} className="inline-block overflow-hidden me-2">
             <motion.span
               className="inline-block"
               initial={{ y: "100%", opacity: 0 }}
@@ -217,7 +228,7 @@ export function TextReveal({ text, children, className, delay = 0, staggerDelay 
 }
 
 // ============================================
-// COUNTER ANIMATION
+// COUNTER ANIMATION (using requestAnimationFrame)
 // ============================================
 
 interface AnimatedCounterProps {
@@ -241,18 +252,15 @@ export function AnimatedCounter({
 
   useEffect(() => {
     if (!isInView) return;
-    let start = 0;
-    const increment = target / (duration * 60);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 1000 / 60);
-    return () => clearInterval(timer);
+    const startTime = performance.now();
+    const animate = (now: number) => {
+      const elapsed = (now - startTime) / 1000;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
   }, [isInView, target, duration]);
 
   return (
@@ -293,6 +301,7 @@ export function MagneticButton({ children, className, onClick }: MagneticButtonP
   return (
     <motion.button
       ref={ref}
+      type="button"
       className={className}
       onClick={onClick}
       onMouseMove={handleMouseMove}

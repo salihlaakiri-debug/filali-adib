@@ -94,7 +94,7 @@ export default function CartPage() {
             <AnimatePresence mode="popLayout">
               {items.map((item) => (
                 <StaggerItem key={item.id}>
-                  <motion.div layout exit={{ opacity: 0, x: -100, transition: { duration: 0.3 } }}
+                  <motion.div layout exit={{ opacity: 0, x: locale === "ar" ? 100 : -100, transition: { duration: 0.3 } }}
                     className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all border border-gray-50">
                     <div className="flex gap-4">
                       {/* Product image */}
@@ -168,9 +168,9 @@ export default function CartPage() {
                 <div className="mb-5">
                   <div className="flex gap-2">
                     <div className="flex-1 relative">
-                      <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Tag size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
                       <input type="text" placeholder={t("coupon")} value={coupon} onChange={(e) => setCoupon(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 text-sm transition-all bg-gray-50 focus:bg-white" />
+                        className="w-full ps-10 pe-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 text-sm transition-all bg-gray-50 focus:bg-white" />
                     </div>
                     <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                       onClick={applyCoupon} disabled={couponLoading}
@@ -215,7 +215,7 @@ export default function CartPage() {
                 <Link href={L("/checkout")}
                   className="flex items-center justify-center gap-2 w-full bg-gold text-secondary py-4 rounded-xl font-semibold text-center hover:bg-gold-dark transition-all mt-6 shadow-lg shadow-gold/20 hover:shadow-gold/40">
                   {t("checkout")}
-                  <ArrowRight size={18} />
+                  <ArrowRight size={18} className={locale === "ar" ? "rotate-180" : ""} />
                 </Link>
                 <Link href={L("/products")} className="flex items-center justify-center text-gold hover:text-gold-dark text-sm mt-4 transition-colors font-medium">
                   {t("continueShopping")}

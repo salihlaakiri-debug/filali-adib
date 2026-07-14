@@ -121,7 +121,7 @@ export default function OrderSuccessPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={L("/products")}
               className="inline-flex items-center justify-center gap-2 bg-gold text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-gold-dark transition-all shadow-lg shadow-gold/20 hover:shadow-gold/40">
-              <ArrowLeft size={18} />
+              <ArrowLeft size={18} className={locale === "ar" ? "rotate-180" : ""} />
               {locale === "ar" ? "متابعة التسوق" : "Continue Shopping"}
             </Link>
             <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(locale === "ar" ? `مرحباً، لدي طلب برقم ${orderNumber}` : `Hello, I have order #${orderNumber}`)}`}
